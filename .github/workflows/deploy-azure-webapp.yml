@@ -59,21 +59,12 @@ jobs:
         run: |
           set -euo pipefail
           XML="$PUBLISH_PROFILE"
-          # Extract attributes from the ZipDeploy profile line
-          ZIP_LINE=$(printf "%s" "$XML" | tr '\n' ' ' | sed -n 's/.*<publishProfile[^>]*publishMethod="ZipDeploy"[^>]*>.*/\0/p')
-          if [ -z "$ZIP_LINE" ]; then
-            ZIP_LINE=$(printf "%s" "$XML" | tr '\n' ' ' | sed -n 's/.*<publishProfile[^>]*publishMethod="MSDeploy"[^>]*>.*/\0/p')
+          KUDU_USER=$(printf "%s" "$XML" | tr '\n' ' ' | sed -n 's/.*userName="\([^"]*\)".*/\1/p')
+          KUDU_PWD=$(printf "%s" "$XML" | tr '\n' ' ' | sed -n 's/.*userPWD="\([^"]*\)".*/\1/p')
+          if [ -z "$KUDU_USER" ] || [ -z "$KUDU_PWD" ]; then
+            echo "Failed to parse publish profile creds" >&2; exit 1
           fi
-          if [ -z "$ZIP_LINE" ]; then
-            echo "No publishProfile found" >&2; exit 1
-          fi
-          KUDU_URL=$(printf "%s" "$ZIP_LINE" | sed -n 's/.*publishUrl="\([^"]*\)".*/\1/p')
-          KUDU_USER=$(printf "%s" "$ZIP_LINE" | sed -n 's/.*userName="\([^"]*\)".*/\1/p')
-          KUDU_PWD=$(printf "%s" "$ZIP_LINE" | sed -n 's/.*userPWD="\([^"]*\)".*/\1/p')
-          if [ -z "$KUDU_URL" ] || [ -z "$KUDU_USER" ] || [ -z "$KUDU_PWD" ]; then
-            echo "Failed to parse publish profile" >&2; exit 1
-          fi
-          case "$KUDU_URL" in http* ) : ;; * ) KUDU_URL="https://$KUDU_URL" ;; esac
+          KUDU_URL="https://${{ env.APP_NAME }}.scm.azurewebsites.net"
           echo "KUDU_URL=$KUDU_URL" >> "$GITHUB_OUTPUT"
           echo "KUDU_USER=$KUDU_USER" >> "$GITHUB_OUTPUT"
           echo "KUDU_PWD=$KUDU_PWD" >> "$GITHUB_OUTPUT"
