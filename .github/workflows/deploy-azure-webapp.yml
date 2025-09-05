@@ -51,30 +51,20 @@ jobs:
         run: |
           zip -r deploy.zip . -x "*.git*" "node_modules/*" "**/.vite/**"
 
-      - name: Parse publish profile
-        id: parsepp
-        env:
-          PUBLISH_PROFILE: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+      - name: Compose Kudu endpoint
+        id: kudu
         shell: bash
         run: |
-          set -euo pipefail
-          XML="$PUBLISH_PROFILE"
-          KUDU_USER=$(printf "%s" "$XML" | tr '\n' ' ' | sed -n 's/.*userName="\([^"]*\)".*/\1/p')
-          KUDU_PWD=$(printf "%s" "$XML" | tr '\n' ' ' | sed -n 's/.*userPWD="\([^"]*\)".*/\1/p')
-          if [ -z "$KUDU_USER" ] || [ -z "$KUDU_PWD" ]; then
-            echo "Failed to parse publish profile creds" >&2; exit 1
-          fi
-          KUDU_URL="https://${{ env.APP_NAME }}.scm.azurewebsites.net"
-          echo "KUDU_URL=$KUDU_URL" >> "$GITHUB_OUTPUT"
-          echo "KUDU_USER=$KUDU_USER" >> "$GITHUB_OUTPUT"
-          echo "KUDU_PWD=$KUDU_PWD" >> "$GITHUB_OUTPUT"
+          echo "KUDU_URL=https://${{ env.APP_NAME }}.scm.azurewebsites.net" >> "$GITHUB_OUTPUT"
 
       - name: Deploy via Kudu Zip Deploy
         shell: bash
+        env:
+          KUDU_USER: ${{ secrets.AZURE_WEBAPP_PUBLISH_USERNAME }}
+          KUDU_PWD: ${{ secrets.AZURE_WEBAPP_PUBLISH_PASSWORD }}
         run: |
           set -euo pipefail
-          echo "::add-mask::${{ steps.parsepp.outputs.KUDU_USER }}"
-          echo "::add-mask::${{ steps.parsepp.outputs.KUDU_PWD }}"
-          KUDU_API="${{ steps.parsepp.outputs.KUDU_URL }}"/api/zipdeploy
-          curl -sS -u "${{ steps.parsepp.outputs.KUDU_USER }}:${{ steps.parsepp.outputs.KUDU_PWD }}" \
-            -X POST "$KUDU_API" --data-binary @deploy.zip
+          echo "::add-mask::$KUDU_USER"
+          echo "::add-mask::$KUDU_PWD"
+          KUDU_API="${{ steps.kudu.outputs.KUDU_URL }}"/api/zipdeploy
+          curl -sS -u "$KUDU_USER:$KUDU_PWD" -X POST "$KUDU_API" --data-binary @deploy.zip
