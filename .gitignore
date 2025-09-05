@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Build output
+/dist/
+/.vite/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor/OS
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Env files
+.env
+.env.*.local
+
+# Misc
+coverage/
+*.local
