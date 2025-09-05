@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion as Motion, AnimatePresence } from 'framer-motion';
 import { 
   Cloud, 
   Brain, 
@@ -79,7 +79,7 @@ const Navigation = () => {
         {/* Mobile Navigation Menu */}
         <AnimatePresence>
           {isOpen && (
-            <motion.div
+            <Motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
@@ -99,7 +99,7 @@ const Navigation = () => {
                   </Link>
                 ))}
               </div>
-            </motion.div>
+            </Motion.div>
           )}
         </AnimatePresence>
       </div>
@@ -115,7 +115,7 @@ const HomePage = () => {
       <section className="hero-gradient cloud-pattern min-h-screen flex items-center justify-center text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
@@ -144,7 +144,7 @@ const HomePage = () => {
                 </Link>
               </Button>
             </div>
-          </motion.div>
+          </Motion.div>
         </div>
         
         {/* Floating Elements */}
@@ -162,7 +162,7 @@ const HomePage = () => {
       {/* Key Highlights Section */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -172,7 +172,7 @@ const HomePage = () => {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Proven track record in cloud architecture, AI integration, and government compliance
             </p>
-          </motion.div>
+          </Motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
@@ -201,7 +201,7 @@ const HomePage = () => {
                 highlight: "Knowledge Transfer"
               }
             ].map((item, index) => (
-              <motion.div
+              <Motion.div
                 key={index}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -219,7 +219,7 @@ const HomePage = () => {
                     <p className="text-gray-600 text-center">{item.description}</p>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </Motion.div>
             ))}
           </div>
         </div>
@@ -228,7 +228,7 @@ const HomePage = () => {
       {/* CTA Section */}
       <section className="py-20 bg-primary text-white">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -252,7 +252,7 @@ const HomePage = () => {
                 </a>
               </Button>
             </div>
-          </motion.div>
+          </Motion.div>
         </div>
       </section>
     </div>
@@ -265,7 +265,7 @@ const AboutPage = () => {
     <div className="min-h-screen pt-16">
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -339,7 +339,7 @@ const AboutPage = () => {
                 ))}
               </div>
             </div>
-          </motion.div>
+          </Motion.div>
         </div>
       </section>
     </div>
@@ -405,7 +405,7 @@ const ExperiencePage = () => {
     <div className="min-h-screen pt-16">
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -414,7 +414,7 @@ const ExperiencePage = () => {
             
             <div className="space-y-12">
               {experiences.map((exp, index) => (
-                <motion.div
+                <Motion.div
                   key={index}
                   initial={{ opacity: 0, x: -30 }}
                   whileInView={{ opacity: 1, x: 0 }}
@@ -449,10 +449,10 @@ const ExperiencePage = () => {
                       </ul>
                     </CardContent>
                   </Card>
-                </motion.div>
+                </Motion.div>
               ))}
             </div>
-          </motion.div>
+          </Motion.div>
         </div>
       </section>
     </div>
@@ -500,7 +500,7 @@ const SkillsPage = () => {
     <div className="min-h-screen pt-16">
       <section className="py-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -509,7 +509,7 @@ const SkillsPage = () => {
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {skillCategories.map((category, categoryIndex) => (
-                <motion.div
+                <Motion.div
                   key={categoryIndex}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -532,12 +532,12 @@ const SkillsPage = () => {
                       ))}
                     </CardContent>
                   </Card>
-                </motion.div>
+                </Motion.div>
               ))}
             </div>
 
             {/* Certifications Section */}
-            <motion.div
+            <Motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
@@ -565,8 +565,8 @@ const SkillsPage = () => {
                   </CardContent>
                 </Card>
               </div>
-            </motion.div>
-          </motion.div>
+            </Motion.div>
+          </Motion.div>
         </div>
       </section>
     </div>
@@ -575,13 +575,11 @@ const SkillsPage = () => {
 
 // Video Resume Page Component
 const VideoResumePage = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
-
   return (
     <div className="min-h-screen pt-16">
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -597,8 +595,6 @@ const VideoResumePage = () => {
                 controls
                 className="w-full h-auto"
                 poster="/api/placeholder/800/450"
-                onPlay={() => setIsPlaying(true)}
-                onPause={() => setIsPlaying(false)}
               >
                 <source src={videoResume} type="video/mp4" />
                 Your browser does not support the video tag.
@@ -655,7 +651,7 @@ const VideoResumePage = () => {
                 ))}
               </div>
             </div>
-          </motion.div>
+          </Motion.div>
         </div>
       </section>
     </div>
@@ -668,7 +664,7 @@ const ContactPage = () => {
     <div className="min-h-screen pt-16">
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -774,7 +770,7 @@ const ContactPage = () => {
                 </CardContent>
               </Card>
             </div>
-          </motion.div>
+          </Motion.div>
         </div>
       </section>
     </div>
