@@ -4,7 +4,7 @@ This is a Vite + React single-page app served by Flask for hosting on Azure App 
 
 - Build static assets with `pnpm build` (outputs to `dist/`).
 - Flask serves files from `dist/` and handles SPA fallback.
-- Azure starts the app via the `Procfile` (Gunicorn).
+- Azure starts the app via the `Procfile` (Gunicorn) using the `wsgi:app` entry point.
 
 Local run (optional):
 1. Build: `pnpm install && pnpm build`
