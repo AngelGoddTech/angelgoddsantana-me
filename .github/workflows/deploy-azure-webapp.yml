@@ -51,30 +51,10 @@ jobs:
         run: |
           zip -r deploy.zip . \
             -x "*.git*" "node_modules/*" "**/.vite/**" \
-               "package.json" "pnpm-lock.yaml"
 
-      - name: Compose Kudu endpoint
-        id: kudu
-        env:
-          PUBLISH_PROFILE: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          XML="$PUBLISH_PROFILE"
-          URL=$(printf "%s" "$XML" | tr '\n' ' ' | sed -n 's/.*publishUrl="\([^"]*\)".*/\1/p' | head -n1)
-          if [ -z "$URL" ]; then echo "Failed to find publishUrl in profile" >&2; exit 1; fi
-          case "$URL" in http* ) : ;; * ) URL="https://$URL" ;; esac
-          echo "KUDU_URL=$URL" >> "$GITHUB_OUTPUT"
-
-      - name: Deploy via Kudu Zip Deploy
-        shell: bash
-        env:
-          KUDU_USER: ${{ secrets.AZURE_WEBAPP_PUBLISH_USERNAME }}
-          KUDU_PWD: ${{ secrets.AZURE_WEBAPP_PUBLISH_PASSWORD }}
-        run: |
-          set -euo pipefail
-          echo "::add-mask::$KUDU_USER"
-          echo "::add-mask::$KUDU_PWD"
-          KUDU_API="${{ steps.kudu.outputs.KUDU_URL }}"/api/zipdeploy?isAsync=true
-          curl -sS -u "$KUDU_USER:$KUDU_PWD" -H "Content-Type: application/zip" \
-            --data-binary @deploy.zip "$KUDU_API"
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.APP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: deploy.zip
