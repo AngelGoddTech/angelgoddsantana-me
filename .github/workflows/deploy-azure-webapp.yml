@@ -47,10 +47,43 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r requirements.txt
 
-      - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: ${{ env.APP_NAME }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: .
-          startup-command: gunicorn -w 4 -k gthread -b 0.0.0.0:$PORT app:app
+      - name: Create deployment package
+        run: |
+          zip -r deploy.zip . -x "*.git*" "node_modules/*" "**/.vite/**"
+
+      - name: Parse publish profile
+        id: parsepp
+        env:
+          PUBLISH_PROFILE: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          XML="$PUBLISH_PROFILE"
+          # Extract attributes from the ZipDeploy profile line
+          ZIP_LINE=$(printf "%s" "$XML" | tr '\n' ' ' | sed -n 's/.*<publishProfile[^>]*publishMethod="ZipDeploy"[^>]*>.*/\0/p')
+          if [ -z "$ZIP_LINE" ]; then
+            ZIP_LINE=$(printf "%s" "$XML" | tr '\n' ' ' | sed -n 's/.*<publishProfile[^>]*publishMethod="MSDeploy"[^>]*>.*/\0/p')
+          fi
+          if [ -z "$ZIP_LINE" ]; then
+            echo "No publishProfile found" >&2; exit 1
+          fi
+          KUDU_URL=$(printf "%s" "$ZIP_LINE" | sed -n 's/.*publishUrl="\([^"]*\)".*/\1/p')
+          KUDU_USER=$(printf "%s" "$ZIP_LINE" | sed -n 's/.*userName="\([^"]*\)".*/\1/p')
+          KUDU_PWD=$(printf "%s" "$ZIP_LINE" | sed -n 's/.*userPWD="\([^"]*\)".*/\1/p')
+          if [ -z "$KUDU_URL" ] || [ -z "$KUDU_USER" ] || [ -z "$KUDU_PWD" ]; then
+            echo "Failed to parse publish profile" >&2; exit 1
+          fi
+          case "$KUDU_URL" in http* ) : ;; * ) KUDU_URL="https://$KUDU_URL" ;; esac
+          echo "KUDU_URL=$KUDU_URL" >> "$GITHUB_OUTPUT"
+          echo "KUDU_USER=$KUDU_USER" >> "$GITHUB_OUTPUT"
+          echo "KUDU_PWD=$KUDU_PWD" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy via Kudu Zip Deploy
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "::add-mask::${{ steps.parsepp.outputs.KUDU_USER }}"
+          echo "::add-mask::${{ steps.parsepp.outputs.KUDU_PWD }}"
+          KUDU_API="${{ steps.parsepp.outputs.KUDU_URL }}"/api/zipdeploy
+          curl -sS -u "${{ steps.parsepp.outputs.KUDU_USER }}:${{ steps.parsepp.outputs.KUDU_PWD }}" \
+            -X POST "$KUDU_API" --data-binary @deploy.zip
