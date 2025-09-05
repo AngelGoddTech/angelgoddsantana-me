@@ -1,7 +1,8 @@
 # Dependencies
 node_modules/
 
-# Build output (commit dist for Azure App Service Python hosting)
+# Build output
+dist/
 /.vite/
 
 # Logs
