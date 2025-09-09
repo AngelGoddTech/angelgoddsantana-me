@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { motion as Motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -26,6 +26,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './com
 import { Badge } from './components/ui/badge';
 import { Progress } from './components/ui/progress';
 import './App.css';
+// Lazy-load the heavy Three.js scene to reduce initial bundle size
+const CubeScene = lazy(() => import('./components/CubeScene.jsx'));
 
 // Import video
 import videoResume from './assets/angel_godd_santana_video_resume_PROPERLY_EXTENDED.mp4';
@@ -45,11 +47,12 @@ const Navigation = () => {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200">
+  <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200 nav-glow">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <Link to="/" className="text-xl font-bold text-primary">
-            Angel Godd-Santana
+          <Link to="/" className="flex items-center gap-3 group">
+            <img src="/ags-website-assets/logo-main.png" alt="AGS Logo" className="h-8 w-auto drop-shadow" />
+            <span className="text-xl font-bold text-primary font-display group-hover:text-[#00B3FF] transition-colors">Angel Godd-Santana</span>
           </Link>
           
           {/* Desktop Navigation */}
@@ -58,8 +61,8 @@ const Navigation = () => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`text-sm font-medium transition-colors hover:text-primary ${
-                  location.pathname === item.path ? 'text-primary' : 'text-gray-600'
+                className={`nav-link text-sm font-medium transition-colors ${
+                  location.pathname === item.path ? 'active' : ''
                 }`}
               >
                 {item.label}
@@ -111,56 +114,122 @@ const Navigation = () => {
 const HomePage = () => {
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="hero-gradient cloud-pattern min-h-screen flex items-center justify-center text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-black/20"></div>
-        <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
-          <Motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <h1 className="text-5xl md:text-7xl font-bold mb-6">
-              Angel Godd-Santana
-            </h1>
-            <h2 className="text-2xl md:text-3xl mb-8 text-blue-100">
-              AI Assisted Cloud Architect/Engineer
-            </h2>
-            <p className="text-xl mb-12 text-blue-50 max-w-3xl mx-auto leading-relaxed">
-              Transforming cloud infrastructure through AI-powered solutions and generative AI integration. 
-              Specializing in Azure, GCP, and AWS with FedRAMP expertise for US Government contracts.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="glass-effect hover:bg-white/20 text-white border-white/30">
-                <Link to="/video-resume">
-                  <Play className="mr-2 h-5 w-5" />
-                  Watch Video Resume
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg" className="glass-effect hover:bg-white/10 text-white border-white/30">
-                <Link to="/contact">
-                  <Mail className="mr-2 h-5 w-5" />
-                  Get In Touch
-                </Link>
-              </Button>
-            </div>
-          </Motion.div>
+      {/* Top: Mockup-like Hero with grid */}
+      <section className="grid-bg hero-gradient min-h-[88vh] pt-24 pb-12 text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-black/30"></div>
+  <div className="relative z-10 container-1200 sm">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+            {/* Left: Headline & CTAs */}
+            <Motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="text-center md:text-left"
+            >
+              <h1 className="font-display hero-heading hero-title font-bold mb-2">
+                AI CLOUD ENGINEER
+              </h1>
+              <h2 className="font-display hero-subheading hero-subtitle text-[#B4F0FF] tracking-wide mb-5">
+                20+ YEARS EXPERIENCE
+              </h2>
+              <p className="font-body text-base md:text-lg text-blue-100/95 leading-relaxed mb-7 max-w-xl md:max-w-2xl">
+                Specializing in AI Stock Video Licensing, Voice, and Advanced Cloud Solutions. Azure, AWS, and GCP with FedRAMP experience.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 md:justify-start justify-center">
+                <Button asChild size="lg" className="bg-gradient-to-r from-[#00B3FF] via-[#FF1BA6] to-[#00FF87] text-black hover:opacity-90 border-0">
+                  <Link to="/video-resume">
+                    <Play className="mr-2 h-5 w-5" />
+                    Watch Video Resume
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" size="lg" className="glass-effect text-white border-white/30 hover:bg-white/10">
+                  <Link to="/contact">
+                    <Mail className="mr-2 h-5 w-5" />
+                    Get In Touch
+                  </Link>
+                </Button>
+              </div>
+
+              {/* Brand chips */}
+              <div className="mt-8 flex flex-wrap gap-3 md:justify-start justify-center">
+                <span className="px-3 py-1 rounded-full text-sm bg-white/10 border border-white/20">FedRAMP Moderate</span>
+                <span className="px-3 py-1 rounded-full text-sm bg-white/10 border border-white/20">700+ Azure Deployments</span>
+                <span className="px-3 py-1 rounded-full text-sm bg-white/10 border border-white/20">Remote‑First</span>
+              </div>
+            </Motion.div>
+
+            {/* Right: Interactive 3D Cube scene */}
+            <Motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.1 }}
+              className="flex items-center justify-center"
+            >
+              <div className="relative w-[320px] h-[320px] md:w-[420px] md:h-[420px]">
+                <div className="absolute -inset-8 rounded-3xl blur-2xl opacity-70" style={{
+                  background: 'conic-gradient(from 0deg at 50% 50%, #00B3FF, #FF1BA6, #00FF87, #00B3FF)'
+                }} />
+                <Suspense fallback={<div className="relative w-full h-full rounded-2xl bg-white/5 border border-white/10 animate-pulse" />}> 
+                  <CubeScene className="relative" />
+                </Suspense>
+                {/* Orbiting labels */}
+                <div className="orbit">
+                  <div className="orbit-ring"></div>
+                  <div className="orbit-ring r2"></div>
+                    <div className="orbit-ring r3"></div>
+                  <div className="orbit-label azure">Azure</div>
+                  <div className="orbit-label gemini">Gemini</div>
+                </div>
+                <img
+                  src="/ags-website-assets/angel-headshot.png"
+                  alt="Angel headshot"
+                  className="absolute -bottom-6 -left-6 w-20 h-20 rounded-full ring-4 ring-[#00B3FF]/40 shadow-xl object-cover"
+                />
+              </div>
+            </Motion.div>
+          </div>
         </div>
-        
+
         {/* Floating Elements */}
-        <div className="absolute top-20 left-10 floating-animation">
+        <div className="absolute top-24 left-10 floating-animation">
           <Cloud className="h-16 w-16 text-white/30" />
         </div>
-        <div className="absolute bottom-20 right-10 floating-animation" style={{ animationDelay: '2s' }}>
+        <div className="absolute bottom-24 right-10 floating-animation" style={{ animationDelay: '2s' }}>
           <Brain className="h-12 w-12 text-white/30" />
         </div>
-        <div className="absolute top-1/2 left-20 floating-animation" style={{ animationDelay: '4s' }}>
+        <div className="absolute top-1/2 left-24 floating-animation" style={{ animationDelay: '4s' }}>
           <Shield className="h-10 w-10 text-white/30" />
         </div>
       </section>
 
+      {/* Nav divider line like mockup */}
+      <div className="nav-divider" />
+
+      {/* Services row (mockup style) */}
+      <section className="py-12 bg-[#0b1120]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h3 className="text-white/90 font-display text-xl tracking-wider mb-6">SERVICES</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { title: 'Gemini 2.5 Flash', desc: 'Visionary AI. Create, reason, iterate. Unleash the intellect.', icon: <Brain className="h-8 w-8 text-[#00B3FF]" /> },
+              { title: 'Veo 2/3', desc: 'AI stock video licensing and voice telemetry across cloud.' , icon: <Play className="h-8 w-8 text-[#FF1BA6]" /> },
+              { title: 'Azure AI Foundry', desc: 'Secure AI models at scale across FedRAMP environments.', icon: <Cloud className="h-8 w-8 text-[#00FF87]" /> },
+              { title: 'NFT Blockchain', desc: 'AI cloud with secure tokenized creation and ownership.', icon: <Star className="h-8 w-8 text-[#B4F0FF]" /> },
+            ].map((svc, i) => (
+              <div key={i} className="neon-card p-6 text-white/90">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="p-2 rounded-lg bg-white/5 ring-1 ring-white/10">{svc.icon}</div>
+                  <h4 className="font-display text-lg">{svc.title}</h4>
+                </div>
+                <p className="text-sm text-blue-100/80">{svc.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Key Highlights Section */}
-      <section className="py-20 bg-gray-50">
+  <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -168,7 +237,7 @@ const HomePage = () => {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Key Achievements</h2>
+    <h2 className="text-4xl font-bold text-gray-900 mb-4 font-display">Key Achievements</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Proven track record in cloud architecture, AI integration, and government compliance
             </p>
@@ -226,14 +295,14 @@ const HomePage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-primary text-white">
+  <section className="py-20 bg-primary text-white">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <Motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-4xl font-bold mb-6">Ready to Transform Your Cloud Strategy?</h2>
+    <h2 className="text-4xl font-bold mb-6 font-display">Ready to Transform Your Cloud Strategy?</h2>
             <p className="text-xl mb-8 text-blue-100">
               Seeking full-time remote positions with US Government agencies and organizations 
               ready to embrace AI-enhanced cloud solutions.
@@ -245,7 +314,7 @@ const HomePage = () => {
                   Schedule Consultation
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="text-white border-white hover:bg-white/10">
+      <Button asChild size="lg" variant="outline" className="text-white border-white hover:bg-white/10">
                 <a href="https://linkedin.com/in/angelgoddsantana" target="_blank" rel="noopener noreferrer">
                   <Linkedin className="mr-2 h-5 w-5" />
                   LinkedIn Profile
