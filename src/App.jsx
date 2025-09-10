@@ -39,291 +39,109 @@ const Navigation = () => {
 
   const navItems = [
     { path: '/', label: 'Home' },
+    { path: '/#services', label: 'Services' },
+    { path: '/#portfolio', label: 'Portfolio' },
     { path: '/about', label: 'About' },
-    { path: '/experience', label: 'Experience' },
-    { path: '/skills', label: 'Skills' },
-    { path: '/video-resume', label: 'Video Resume' },
     { path: '/contact', label: 'Contact' }
   ];
 
+  const handleNavClick = (e, path) => {
+    if (path.startsWith('/#')) {
+      e.preventDefault();
+      const targetId = path.substring(2);
+      if (location.pathname === '/') {
+        document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        window.location.href = path;
+      }
+    }
+    setIsOpen(false);
+  };
+
   return (
-  <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200 nav-glow">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-gray-900/80 backdrop-blur-md border-b border-gray-700/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-20">
           <Link to="/" className="flex items-center gap-3 group">
-            <img src="/ags-website-assets/logo-main.png" alt="AGS Logo" className="h-8 w-auto drop-shadow" />
-            <span className="text-xl font-bold text-primary font-display group-hover:text-[#00B3FF] transition-colors">Angel Godd-Santana</span>
+            <img src="/ags-website-assets/logo-main.png" alt="AGS Logo" className="h-12 w-auto" />
           </Link>
           
           {/* Desktop Navigation */}
-          <div className="hidden md:flex space-x-8">
+          <div className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`nav-link text-sm font-medium transition-colors ${
-                  location.pathname === item.path ? 'active' : ''
-                }`}
+                onClick={(e) => handleNavClick(e, item.path)}
+                className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
               >
                 {item.label}
               </Link>
             ))}
+            <Button asChild variant="outline" className="border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-black">
+              <Link to="/contact">Hire Me</Link>
+            </Button>
           </div>
 
           {/* Mobile Navigation Button */}
           <button
-            className="md:hidden"
+            className="md:hidden text-white"
             onClick={() => setIsOpen(!isOpen)}
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
-
-        {/* Mobile Navigation Menu */}
-        <AnimatePresence>
-          {isOpen && (
-            <Motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="md:hidden bg-white border-t border-gray-200"
-            >
-              <div className="px-2 pt-2 pb-3 space-y-1">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className={`block px-3 py-2 text-base font-medium transition-colors hover:text-primary ${
-                      location.pathname === item.path ? 'text-primary' : 'text-gray-600'
-                    }`}
-                    onClick={() => setIsOpen(false)}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
-            </Motion.div>
-          )}
-        </AnimatePresence>
       </div>
+
+      {/* Mobile Navigation Menu */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden bg-gray-900/90 backdrop-blur-sm"
+          >
+            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+              {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={(e) => handleNavClick(e, item.path)}
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700"
+                >
+                  {item.label}
+                </Link>
+              ))}
+              <div className="pt-4 pb-2 px-3">
+                <Button asChild variant="outline" className="w-full border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-black">
+                  <Link to="/contact">Hire Me</Link>
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 };
 
+import Hero from './components/home/Hero';
+import Services from './components/home/Services';
+import Portfolio from './components/home/Portfolio';
+import Contact from './components/home/Contact';
+import './HomePage.css';
+
 // Home Page Component
 const HomePage = () => {
   return (
-    <div className="min-h-screen">
-      {/* Top: Mockup-like Hero with grid */}
-      <section className="grid-bg hero-gradient min-h-[88vh] pt-24 pb-12 text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-black/30"></div>
-  <div className="relative z-10 container-1200 sm">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-            {/* Left: Headline & CTAs */}
-            <Motion.div
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="text-center md:text-left"
-            >
-              <h1 className="font-display hero-heading hero-title font-bold mb-2">
-                AI CLOUD ENGINEER
-              </h1>
-              <h2 className="font-display hero-subheading hero-subtitle text-[#B4F0FF] tracking-wide mb-5">
-                20+ YEARS EXPERIENCE
-              </h2>
-              <p className="font-body text-base md:text-lg text-blue-100/95 leading-relaxed mb-7 max-w-xl md:max-w-2xl">
-                Specializing in AI Stock Video Licensing, Voice, and Advanced Cloud Solutions. Azure, AWS, and GCP with FedRAMP experience.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 md:justify-start justify-center">
-                <Button asChild size="lg" className="bg-gradient-to-r from-[#00B3FF] via-[#FF1BA6] to-[#00FF87] text-black hover:opacity-90 border-0">
-                  <Link to="/video-resume">
-                    <Play className="mr-2 h-5 w-5" />
-                    Watch Video Resume
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" size="lg" className="glass-effect text-white border-white/30 hover:bg-white/10">
-                  <Link to="/contact">
-                    <Mail className="mr-2 h-5 w-5" />
-                    Get In Touch
-                  </Link>
-                </Button>
-              </div>
-
-              {/* Brand chips */}
-              <div className="mt-8 flex flex-wrap gap-3 md:justify-start justify-center">
-                <span className="px-3 py-1 rounded-full text-sm bg-white/10 border border-white/20">FedRAMP Moderate</span>
-                <span className="px-3 py-1 rounded-full text-sm bg-white/10 border border-white/20">700+ Azure Deployments</span>
-                <span className="px-3 py-1 rounded-full text-sm bg-white/10 border border-white/20">Remote‑First</span>
-              </div>
-            </Motion.div>
-
-            {/* Right: Interactive 3D Cube scene */}
-            <Motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.1 }}
-              className="flex items-center justify-center"
-            >
-              <div className="relative w-[320px] h-[320px] md:w-[420px] md:h-[420px]">
-                <div className="absolute -inset-8 rounded-3xl blur-2xl opacity-70" style={{
-                  background: 'conic-gradient(from 0deg at 50% 50%, #00B3FF, #FF1BA6, #00FF87, #00B3FF)'
-                }} />
-                <Suspense fallback={<div className="relative w-full h-full rounded-2xl bg-white/5 border border-white/10 animate-pulse" />}> 
-                  <CubeScene className="relative" />
-                </Suspense>
-                {/* Orbiting labels */}
-                <div className="orbit">
-                  <div className="orbit-ring"></div>
-                  <div className="orbit-ring r2"></div>
-                    <div className="orbit-ring r3"></div>
-                  <div className="orbit-label azure">Azure</div>
-                  <div className="orbit-label gemini">Gemini</div>
-                </div>
-                <img
-                  src="/ags-website-assets/angel-headshot.png"
-                  alt="Angel headshot"
-                  className="absolute -bottom-6 -left-6 w-20 h-20 rounded-full ring-4 ring-[#00B3FF]/40 shadow-xl object-cover"
-                />
-              </div>
-            </Motion.div>
-          </div>
-        </div>
-
-        {/* Floating Elements */}
-        <div className="absolute top-24 left-10 floating-animation">
-          <Cloud className="h-16 w-16 text-white/30" />
-        </div>
-        <div className="absolute bottom-24 right-10 floating-animation" style={{ animationDelay: '2s' }}>
-          <Brain className="h-12 w-12 text-white/30" />
-        </div>
-        <div className="absolute top-1/2 left-24 floating-animation" style={{ animationDelay: '4s' }}>
-          <Shield className="h-10 w-10 text-white/30" />
-        </div>
-      </section>
-
-      {/* Nav divider line like mockup */}
-      <div className="nav-divider" />
-
-      {/* Services row (mockup style) */}
-      <section className="py-12 bg-[#0b1120]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h3 className="text-white/90 font-display text-xl tracking-wider mb-6">SERVICES</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { title: 'Gemini 2.5 Flash', desc: 'Visionary AI. Create, reason, iterate. Unleash the intellect.', icon: <Brain className="h-8 w-8 text-[#00B3FF]" /> },
-              { title: 'Veo 2/3', desc: 'AI stock video licensing and voice telemetry across cloud.' , icon: <Play className="h-8 w-8 text-[#FF1BA6]" /> },
-              { title: 'Azure AI Foundry', desc: 'Secure AI models at scale across FedRAMP environments.', icon: <Cloud className="h-8 w-8 text-[#00FF87]" /> },
-              { title: 'NFT Blockchain', desc: 'AI cloud with secure tokenized creation and ownership.', icon: <Star className="h-8 w-8 text-[#B4F0FF]" /> },
-            ].map((svc, i) => (
-              <div key={i} className="neon-card p-6 text-white/90">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="p-2 rounded-lg bg-white/5 ring-1 ring-white/10">{svc.icon}</div>
-                  <h4 className="font-display text-lg">{svc.title}</h4>
-                </div>
-                <p className="text-sm text-blue-100/80">{svc.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Key Highlights Section */}
-  <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-    <h2 className="text-4xl font-bold text-gray-900 mb-4 font-display">Key Achievements</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Proven track record in cloud architecture, AI integration, and government compliance
-            </p>
-          </Motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
-              {
-                icon: <Shield className="h-8 w-8 text-blue-600" />,
-                title: "FedRAMP Moderate",
-                description: "Achieved FedRAMP authorization for Azure Government cloud team",
-                highlight: "2019-2021"
-              },
-              {
-                icon: <Cloud className="h-8 w-8 text-blue-600" />,
-                title: "700+ Deployments",
-                description: "Created and deployed Azure subscriptions and AWS accounts",
-                highlight: "Enterprise Scale"
-              },
-              {
-                icon: <Brain className="h-8 w-8 text-blue-600" />,
-                title: "AI Pioneer",
-                description: "Early adopter of Azure Foundry OpenAI platform integration",
-                highlight: "Innovation Leader"
-              },
-              {
-                icon: <Users className="h-8 w-8 text-blue-600" />,
-                title: "Team Mentor",
-                description: "Trained multiple junior engineers in cloud deployments",
-                highlight: "Knowledge Transfer"
-              }
-            ].map((item, index) => (
-              <Motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-              >
-                <Card className="h-full hover:shadow-lg transition-shadow duration-300">
-                  <CardHeader className="text-center">
-                    <div className="mx-auto mb-4 p-3 bg-blue-100 rounded-full w-fit">
-                      {item.icon}
-                    </div>
-                    <CardTitle className="text-lg">{item.title}</CardTitle>
-                    <Badge variant="secondary">{item.highlight}</Badge>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600 text-center">{item.description}</p>
-                  </CardContent>
-                </Card>
-              </Motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-  <section className="py-20 bg-primary text-white">
-        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <Motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-    <h2 className="text-4xl font-bold mb-6 font-display">Ready to Transform Your Cloud Strategy?</h2>
-            <p className="text-xl mb-8 text-blue-100">
-              Seeking full-time remote positions with US Government agencies and organizations 
-              ready to embrace AI-enhanced cloud solutions.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" variant="secondary">
-                <Link to="/contact">
-                  <Mail className="mr-2 h-5 w-5" />
-                  Schedule Consultation
-                </Link>
-              </Button>
-      <Button asChild size="lg" variant="outline" className="text-white border-white hover:bg-white/10">
-                <a href="https://linkedin.com/in/angelgoddsantana" target="_blank" rel="noopener noreferrer">
-                  <Linkedin className="mr-2 h-5 w-5" />
-                  LinkedIn Profile
-                </a>
-              </Button>
-            </div>
-          </Motion.div>
-        </div>
-      </section>
+    <div className="bg-[#0b1120] text-white" style={{ overflow: 'auto' }}>
+      <main>
+        <Hero />
+        <Services />
+        <Portfolio />
+        <Contact />
+      </main>
     </div>
   );
 };
