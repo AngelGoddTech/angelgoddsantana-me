@@ -15,8 +15,8 @@
 | **Resource Group** | `angelgoddsantana-me-rg` |
 | **Custom Domain** | [angelgoddsantana.me](https://angelgoddsantana.me) |
 | **SSL** | Azure Managed Certificate (auto-renewing) |
-| **DNS** | Azure DNS zone in `dns-4angelgoddsantana-me-rg` (source sub `19a6d236`) |
-| **CI/CD** | GitHub Actions → OIDC → Azure (`main_angelgoddsantana-me.yml`) |
+| **DNS** | Azure DNS zone in `dns-4angelgoddsantana-me-rg` (sub `deb5fa03`, NS: `ns*-09`) |
+| **CI/CD** | GitHub Actions → OIDC → Azure (`deploy-azure-webapp.yml`) |
 | **Domain Registrar** | GoDaddy (expires 2027-09-04) |
 
 ## 💰 Monthly Cost
@@ -64,3 +64,6 @@ az webapp deploy --name angelgoddsantana-me-v2 \
 | 2026-05-14 | **B2 → B1 downgrade** | -$12.41/mo (-45%) |
 | 2026-05-14 | **Migrated to sub `deb5fa03`** | Cross-tenant recreate (from `19a6d236`) |
 | 2026-05-14 | App renamed `angelgoddsantana-me-v2` | Soft-delete name conflict |
+| 2026-05-14 | **OIDC CI/CD reconfigured** | New App Registration + federated credential |
+| 2026-05-14 | **DNS zone migrated to target sub** | Recreated in `deb5fa03`, GoDaddy NS updated |
+| 2026-05-14 | **SSL cert bound** | GeoTrust managed cert (auto-renewing, expires 2026-11-14) |
