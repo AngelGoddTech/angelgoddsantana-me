@@ -66,6 +66,6 @@ jobs:
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
-          app-name: 'angelgoddsantana-me'
+          app-name: 'angelgoddsantana-me-v2'
           slot-name: 'Production'
           
