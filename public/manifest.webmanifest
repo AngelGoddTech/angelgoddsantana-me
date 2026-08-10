@@ -1,0 +1,9 @@
+{
+  "name": "Angel Godd-Santana | Cloud & AI Platform Architecture",
+  "short_name": "AGS",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#071a37",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

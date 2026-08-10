@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">AGS monogram</title>
+  <desc id="desc">Angel Godd-Santana cloud and AI platform architecture monogram</desc>
+  <defs>
+    <linearGradient id="edge" x1="18" y1="16" x2="112" y2="114" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#071A37"/>
+      <stop offset=".5" stop-color="#0877D9"/>
+      <stop offset="1" stop-color="#27C1D9"/>
+    </linearGradient>
+    <linearGradient id="fill" x1="25" y1="17" x2="105" y2="112" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F6FBFF"/>
+      <stop offset="1" stop-color="#DCEFFD"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#fill)" stroke="url(#edge)" stroke-width="6" stroke-linejoin="round" d="M64 7 113 35v58l-49 28-49-28V35L64 7Z"/>
+  <path fill="none" stroke="#27C1D9" stroke-width="2.5" stroke-linecap="round" d="M32 41h16M80 41h16M23 76h16M89 76h16M64 99V85"/>
+  <circle cx="27" cy="41" r="3.5" fill="#27C1D9"/><circle cx="101" cy="41" r="3.5" fill="#27C1D9"/><circle cx="19" cy="76" r="3.5" fill="#27C1D9"/><circle cx="109" cy="76" r="3.5" fill="#27C1D9"/><circle cx="64" cy="104" r="3.5" fill="#27C1D9"/>
+  <text x="64" y="77" text-anchor="middle" fill="#071A37" font-family="Arial, Helvetica, sans-serif" font-size="39" font-weight="800" letter-spacing="-6">AGS</text>
+</svg>

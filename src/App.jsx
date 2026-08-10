@@ -1,686 +1,495 @@
-import React, { useState, Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { motion as Motion, AnimatePresence } from 'framer-motion';
-import { 
-  Cloud, 
-  Brain, 
-  Shield, 
-  Users, 
-  Award, 
-  Mail, 
-  Linkedin, 
-  Download,
-  Play,
-  Pause,
-  Menu,
-  X,
+import { useEffect, useState } from 'react';
+import { BrowserRouter, Link, NavLink, Route, Routes, useLocation } from 'react-router-dom';
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Bot,
+  BriefcaseBusiness,
+  Check,
   ChevronRight,
-  Star,
-  Building,
-  MapPin,
-  Calendar,
-  ExternalLink
+  CloudCog,
+  Download,
+  FileText,
+  Github,
+  Linkedin,
+  Mail,
+  Menu,
+  ShieldCheck,
+  Sparkles,
+  X,
 } from 'lucide-react';
-import { Button } from './components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card';
-import { Badge } from './components/ui/badge';
-import { Progress } from './components/ui/progress';
 import './App.css';
-// Lazy-load the heavy Three.js scene to reduce initial bundle size
-const CubeScene = lazy(() => import('./components/CubeScene.jsx'));
 
-// Import video
-import videoResume from './assets/angel_godd_santana_video_resume_PROPERLY_EXTENDED.mp4';
+const RESUME_PDF = '/documents/Angel_Godd_Santana_Principal_Cloud_AI_Architect_Resume.pdf';
+const RESUME_DOCX = '/documents/Angel_Godd_Santana_Principal_Cloud_AI_Architect_Resume.docx';
+const LINKEDIN_URL = 'https://www.linkedin.com/in/angelgoddsantana/';
+const GITHUB_URL = 'https://github.com/AngelGoddTech';
+const EMAIL_URL = 'mailto:goddsantana@gmail.com';
 
-// Navigation Component
-const Navigation = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const location = useLocation();
+const navigation = [
+  { to: '/', label: 'Home', end: true },
+  { to: '/work-with-me', label: 'Work with me' },
+  { to: '/resume', label: 'Résumé' },
+  { to: '/about', label: 'About' },
+  { to: '/contact', label: 'Contact' },
+];
 
-  const navItems = [
-    { path: '/', label: 'Home' },
-    { path: '/#services', label: 'Services' },
-    { path: '/#portfolio', label: 'Portfolio' },
-    { path: '/about', label: 'About' },
-    { path: '/contact', label: 'Contact' }
-  ];
+function ScrollToTop() {
+  const { pathname } = useLocation();
 
-  const handleNavClick = (e, path) => {
-    if (path.startsWith('/#')) {
-      e.preventDefault();
-      const targetId = path.substring(2);
-      if (location.pathname === '/') {
-        document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' });
-      } else {
-        window.location.href = path;
-      }
-    }
-    setIsOpen(false);
-  };
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
+  return null;
+}
+
+function Wordmark() {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-gray-900/80 backdrop-blur-md border-b border-gray-700/50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
-          <Link to="/" className="flex items-center gap-3 group">
-            <img src="/ags-website-assets/logo-main.png" alt="AGS Logo" className="h-12 w-auto" />
-          </Link>
-          
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                onClick={(e) => handleNavClick(e, item.path)}
-                className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
-              >
-                {item.label}
-              </Link>
-            ))}
-            <Button asChild variant="outline" className="border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-black">
-              <Link to="/contact">Hire Me</Link>
-            </Button>
-          </div>
-
-          {/* Mobile Navigation Button */}
-          <button
-            className="md:hidden text-white"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Navigation Menu */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-gray-900/90 backdrop-blur-sm"
-          >
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-              {navItems.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={(e) => handleNavClick(e, item.path)}
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700"
-                >
-                  {item.label}
-                </Link>
-              ))}
-              <div className="pt-4 pb-2 px-3">
-                <Button asChild variant="outline" className="w-full border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-black">
-                  <Link to="/contact">Hire Me</Link>
-                </Button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </nav>
-  );
-};
-
-import Hero from './components/home/Hero';
-import Services from './components/home/Services';
-import Portfolio from './components/home/Portfolio';
-import Contact from './components/home/Contact';
-import './HomePage.css';
-
-// Home Page Component
-const HomePage = () => {
-  return (
-    <div className="bg-[#0b1120] text-white" style={{ overflow: 'auto' }}>
-      <main>
-        <Hero />
-        <Services />
-        <Portfolio />
-        <Contact />
-      </main>
-    </div>
-  );
-};
-
-// About Page Component
-const AboutPage = () => {
-  return (
-    <div className="min-h-screen pt-16">
-      <section className="py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <h1 className="text-4xl font-bold text-gray-900 mb-8">About Me</h1>
-            
-            <div className="prose prose-lg max-w-none">
-              <p className="text-xl text-gray-600 mb-8">
-                I'm an AI Assisted Cloud Architect/Engineer specializing in transforming cloud infrastructure 
-                through cutting-edge artificial intelligence solutions. With over 20 years of experience in 
-                cloud computing and 10+ years specifically in Azure cloud platform, I'm reinventing my career to leverage generative AI technologies 
-                for enhanced cloud architecture and automation.
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <MapPin className="mr-2 h-5 w-5 text-blue-600" />
-                      Location & Work Style
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600">
-                      Based in Fort Lauderdale, Florida. Exclusively seeking full-time remote positions, 
-                      bringing flexibility and global accessibility to distributed cloud architecture teams.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <Building className="mr-2 h-5 w-5 text-blue-600" />
-                      Target Focus
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600">
-                      Primary focus on US Government contracts and medium-sized organizations migrating to cloud, 
-                      where security, compliance, and reliability are paramount.
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Career Transformation</h2>
-              <p className="text-gray-600 mb-8">
-                I'm currently transitioning from my role as Senior Cloud Governance Operations Engineer at 
-                Cloud Software Group to become an AI Assisted Cloud Architect. This transformation represents 
-                my commitment to staying at the forefront of technology, combining extensive cloud expertise 
-                with revolutionary AI capabilities including OpenAI APIs and Gemini AI integration.
-              </p>
-
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Specializations</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {[
-                  "AI-assisted cloud architecture and automation",
-                  "Azure Lighthouse technology implementation",
-                  "Entra ID and identity management solutions",
-                  "Multi-cloud Infrastructure as a Service (IaaS) deployments",
-                  "OpenAI and Gemini API integration",
-                  "Cloud migration strategies and governance",
-                  "NFT minting pipeline development",
-                  "FedRAMP compliance and government cloud solutions"
-                ].map((item, index) => (
-                  <div key={index} className="flex items-start">
-                    <ChevronRight className="h-5 w-5 text-blue-600 mt-0.5 mr-2 flex-shrink-0" />
-                    <span className="text-gray-600">{item}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </Motion.div>
-        </div>
-      </section>
-    </div>
-  );
-};
-
-// Experience Page Component
-const ExperiencePage = () => {
-  const experiences = [
-    {
-      title: "Senior Cloud Governance Ops Engineer",
-      company: "Cloud Software Group (formerly Citrix Systems)",
-      period: "Sep 2018 - Aug 2025",
-      location: "Miami/Fort Lauderdale Area",
-      achievements: [
-        "Successfully implemented multiple Azure Lighthouse deployments, streamlining multi-tenant governance and identity management",
-        "Deployed new Azure Active Directory (Entra ID) tenants, enhancing security and user access management",
-        "Instrumental in assisting Azure Government cloud team achieve FedRAMP Moderate authorization (2019-2021)",
-        "Executed deployment and integration of Azure Government Active Directory for FedRAMP controls",
-        "Architected Identity Access Management solutions integrating Azure Gov and AWS Gov using SAML Single-Sign-On",
-        "Created and deployed over 700 Azure subscriptions in commercial and government environments",
-        "Led AWS SAML Single-Sign-On implementation in commercial environments",
-        "Mentored and trained multiple junior engineers in complex cloud deployments and Azure IaaS migrations",
-        "Pioneer in encouraging Generative AI adoption using Azure Foundry OpenAI platform",
-        "Fostered and taught engineers AI technology integration in cloud workflows"
-      ]
-    },
-    {
-      title: "Azure Cloud Architect - Contractor",
-      company: "Godd Technologies, LLC.",
-      period: "Feb 2018 - Sep 2018",
-      location: "Homestead, FL",
-      achievements: [
-        "Architected, deployed, and maintained virtual machines in Azure Cloud Computing platform (IaaS solution)",
-        "Managed on-premise private cloud infrastructure integration"
-      ]
-    },
-    {
-      title: "Manager of IT, Cloud Operations",
-      company: "Vertice Technologies",
-      period: "Oct 2017 - Feb 2018",
-      location: "9350 South Dixie Highway",
-      achievements: [
-        "Led cloud operations team in Azure infrastructure management",
-        "Architected and deployed virtual machines in Azure Cloud Computing platform",
-        "Maintained hybrid cloud and on-premise private infrastructure"
-      ]
-    },
-    {
-      title: "Azure Cloud Solutions Architect/Engineer",
-      company: "Campus Management Corp.",
-      period: "May 2011 - Aug 2017",
-      location: "Remote",
-      achievements: [
-        "Architected, deployed, and maintained virtual machines in Azure Cloud Computing platform (IaaS solution)",
-        "Managed enterprise-scale cloud infrastructure for educational technology solutions",
-        "Developed cloud migration strategies for legacy systems"
-      ]
-    }
-  ];
-
-  return (
-    <div className="min-h-screen pt-16">
-      <section className="py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <h1 className="text-4xl font-bold text-gray-900 mb-12">Professional Experience</h1>
-            
-            <div className="space-y-12">
-              {experiences.map((exp, index) => (
-                <Motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -30 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                >
-                  <Card className="hover:shadow-lg transition-shadow duration-300">
-                    <CardHeader>
-                      <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                        <div>
-                          <CardTitle className="text-xl text-primary">{exp.title}</CardTitle>
-                          <CardDescription className="text-lg font-medium text-gray-700 mt-1">
-                            {exp.company}
-                          </CardDescription>
-                        </div>
-                        <div className="mt-2 md:mt-0 text-right">
-                          <Badge variant="outline" className="mb-1">
-                            <Calendar className="mr-1 h-3 w-3" />
-                            {exp.period}
-                          </Badge>
-                          <p className="text-sm text-gray-500">{exp.location}</p>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <ul className="space-y-2">
-                        {exp.achievements.map((achievement, achIndex) => (
-                          <li key={achIndex} className="flex items-start">
-                            <Star className="h-4 w-4 text-blue-600 mt-1 mr-2 flex-shrink-0" />
-                            <span className="text-gray-600">{achievement}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                  </Card>
-                </Motion.div>
-              ))}
-            </div>
-          </Motion.div>
-        </div>
-      </section>
-    </div>
-  );
-};
-
-// Skills Page Component
-const SkillsPage = () => {
-  const skillCategories = [
-    {
-      category: "Cloud Platforms",
-      skills: [
-        { name: "Microsoft Azure", level: 95, description: "Azure Lighthouse, Entra ID, Government Cloud" },
-        { name: "Amazon Web Services", level: 85, description: "SAML SSO, Government Cloud, IaaS" },
-        { name: "Google Cloud Platform", level: 80, description: "Organizations, Projects, Enterprise Architecture" }
-      ]
-    },
-    {
-      category: "AI & Machine Learning",
-      skills: [
-        { name: "OpenAI API", level: 90, description: "GPT integration, Azure Foundry OpenAI" },
-        { name: "Generative AI", level: 85, description: "AI-assisted cloud automation" },
-        { name: "Gemini AI", level: 75, description: "Google AI integration and workflows" }
-      ]
-    },
-    {
-      category: "Programming & Development",
-      skills: [
-        { name: "Python", level: 85, description: "Cloud automation, AI integration" },
-        { name: "SQL", level: 80, description: "Database management and optimization" },
-        { name: "C Programming", level: 70, description: "System-level programming" }
-      ]
-    },
-    {
-      category: "Security & Compliance",
-      skills: [
-        { name: "FedRAMP", level: 95, description: "Moderate authorization, Government compliance" },
-        { name: "Identity Management", level: 90, description: "SAML SSO, Cross-cloud integration" },
-        { name: "Azure Lighthouse", level: 95, description: "Multi-tenant governance" }
-      ]
-    }
-  ];
-
-  return (
-    <div className="min-h-screen pt-16">
-      <section className="py-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <h1 className="text-4xl font-bold text-gray-900 mb-12 text-center">Technical Skills</h1>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {skillCategories.map((category, categoryIndex) => (
-                <Motion.div
-                  key={categoryIndex}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: categoryIndex * 0.1 }}
-                >
-                  <Card className="h-full">
-                    <CardHeader>
-                      <CardTitle className="text-xl text-primary">{category.category}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                      {category.skills.map((skill, skillIndex) => (
-                        <div key={skillIndex} className="space-y-2">
-                          <div className="flex justify-between items-center">
-                            <h3 className="font-medium text-gray-900">{skill.name}</h3>
-                            <span className="text-sm text-gray-500">{skill.level}%</span>
-                          </div>
-                          <Progress value={skill.level} className="skill-bar" />
-                          <p className="text-sm text-gray-600">{skill.description}</p>
-                        </div>
-                      ))}
-                    </CardContent>
-                  </Card>
-                </Motion.div>
-              ))}
-            </div>
-
-            {/* Certifications Section */}
-            <Motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="mt-16"
-            >
-              <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">Education & Certifications</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Master of Science in Computer Information Systems</CardTitle>
-                    <CardDescription>University of Phoenix • 2009 - 2011</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600">Computer Science Major</p>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Bachelor of Science (B.S.)</CardTitle>
-                    <CardDescription>University of Phoenix • 2005 - 2008</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600">Information Technology</p>
-                  </CardContent>
-                </Card>
-              </div>
-            </Motion.div>
-          </Motion.div>
-        </div>
-      </section>
-    </div>
-  );
-};
-
-// Video Resume Page Component
-const VideoResumePage = () => {
-  return (
-    <div className="min-h-screen pt-16">
-      <section className="py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <h1 className="text-4xl font-bold text-gray-900 mb-8 text-center">Video Resume</h1>
-            <p className="text-xl text-gray-600 text-center mb-12">
-              Watch my comprehensive video resume showcasing my expertise in AI-assisted cloud architecture, 
-              FedRAMP compliance, and multi-cloud deployments.
-            </p>
-            
-            <div className="relative bg-black rounded-lg overflow-hidden shadow-2xl pulse-glow">
-              <video
-                controls
-                className="w-full h-auto"
-                poster="/api/placeholder/800/450"
-              >
-                <source src={videoResume} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-            </div>
-
-            <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card className="text-center">
-                <CardHeader>
-                  <CardTitle className="text-lg">Duration</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-bold text-primary">4:30</p>
-                  <p className="text-gray-600">Minutes</p>
-                </CardContent>
-              </Card>
-              
-              <Card className="text-center">
-                <CardHeader>
-                  <CardTitle className="text-lg">Key Topics</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-bold text-primary">16</p>
-                  <p className="text-gray-600">Slides</p>
-                </CardContent>
-              </Card>
-              
-              <Card className="text-center">
-                <CardHeader>
-                  <CardTitle className="text-lg">Focus</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm font-bold text-primary">AI + Cloud</p>
-                  <p className="text-gray-600">Integration</p>
-                </CardContent>
-              </Card>
-            </div>
-
-            <div className="mt-12 text-center">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Video Highlights</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
-                {[
-                  "FedRAMP Moderate Achievement & Azure Government Expertise",
-                  "700+ Azure Subscriptions & Multi-Cloud Leadership",
-                  "Identity Access Management & Cross-Cloud Integration",
-                  "AI Integration Pioneer & Azure Foundry OpenAI Leadership",
-                  "Mentorship & Knowledge Transfer Excellence",
-                  "Vision for AI-Enhanced Cloud Architecture Future"
-                ].map((highlight, index) => (
-                  <div key={index} className="flex items-start">
-                    <Play className="h-5 w-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" />
-                    <span className="text-gray-600">{highlight}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </Motion.div>
-        </div>
-      </section>
-    </div>
-  );
-};
-
-// Contact Page Component
-const ContactPage = () => {
-  return (
-    <div className="min-h-screen pt-16">
-      <section className="py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <h1 className="text-4xl font-bold text-gray-900 mb-8 text-center">Get In Touch</h1>
-            <p className="text-xl text-gray-600 text-center mb-12">
-              Ready to discuss how AI-assisted cloud architecture can transform your organization? 
-              Let's connect and explore opportunities.
-            </p>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Contact Information</h2>
-                <div className="space-y-6">
-                  <div className="flex items-center">
-                    <Mail className="h-6 w-6 text-blue-600 mr-4" />
-                    <div>
-                      <p className="font-medium">Email</p>
-                      <p className="text-gray-600">goddsantana@gmail.com</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center">
-                    <Linkedin className="h-6 w-6 text-blue-600 mr-4" />
-                    <div>
-                      <p className="font-medium">LinkedIn</p>
-                      <a 
-                        href="https://linkedin.com/in/angelgoddsantana" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline flex items-center"
-                      >
-                        linkedin.com/in/angelgoddsantana
-                        <ExternalLink className="h-4 w-4 ml-1" />
-                      </a>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center">
-                    <MapPin className="h-6 w-6 text-blue-600 mr-4" />
-                    <div>
-                      <p className="font-medium">Location</p>
-                      <p className="text-gray-600">Fort Lauderdale, Florida, United States</p>
-                      <p className="text-sm text-gray-500">Remote work preferred</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-8">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4">Availability</h3>
-                  <div className="space-y-2">
-                    <Badge variant="outline" className="mr-2">Full-time Remote Only</Badge>
-                    <Badge variant="outline" className="mr-2">US Government Contracts</Badge>
-                    <Badge variant="outline">Cloud Migration Projects</Badge>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Areas of Expertise</CardTitle>
-                    <CardDescription>
-                      Specialized services for your cloud transformation needs
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {[
-                      "AI-assisted cloud architecture and automation",
-                      "FedRAMP compliance and government cloud solutions",
-                      "Azure Lighthouse multi-tenant governance",
-                      "Cross-cloud identity access management",
-                      "Cloud migration strategies and implementation",
-                      "Team mentorship and knowledge transfer",
-                      "OpenAI and Gemini AI integration",
-                      "Enterprise-scale infrastructure deployment"
-                    ].map((service, index) => (
-                      <div key={index} className="flex items-start">
-                        <ChevronRight className="h-4 w-4 text-blue-600 mt-1 mr-2 flex-shrink-0" />
-                        <span className="text-gray-600 text-sm">{service}</span>
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-
-            <div className="mt-12 text-center">
-              <Card className="bg-primary text-white">
-                <CardContent className="pt-6">
-                  <h3 className="text-xl font-bold mb-4">Ready to Transform Your Cloud Strategy?</h3>
-                  <p className="mb-6 text-blue-100">
-                    Whether you're a US Government agency planning cloud migration or a medium-sized 
-                    company seeking innovative infrastructure solutions, I offer the expertise and 
-                    remote collaboration capabilities to revolutionize your digital infrastructure.
-                  </p>
-                  <Button asChild variant="secondary" size="lg">
-                    <a href="mailto:goddsantana@gmail.com">
-                      <Mail className="mr-2 h-5 w-5" />
-                      Schedule a Consultation
-                    </a>
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-          </Motion.div>
-        </div>
-      </section>
-    </div>
-  );
-};
-
-// Main App Component
-function App() {
-  return (
-    <Router>
-      <div className="App">
-        <Navigation />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/experience" element={<ExperiencePage />} />
-          <Route path="/skills" element={<SkillsPage />} />
-          <Route path="/video-resume" element={<VideoResumePage />} />
-          <Route path="/contact" element={<ContactPage />} />
-        </Routes>
-      </div>
-    </Router>
+    <Link className="wordmark" to="/" aria-label="Angel Godd-Santana home">
+      <img src="/ags-mark.svg" alt="AGS monogram" width="48" height="48" />
+      <span>
+        <strong>Angel Godd-Santana</strong>
+        <small>Cloud &amp; AI Platform Architecture</small>
+      </span>
+    </Link>
   );
 }
 
-export default App
+function Header() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const closeMenu = () => setMenuOpen(false);
+
+  return (
+    <header className="site-header">
+      <div className="shell header-inner">
+        <Wordmark />
+        <nav className="desktop-nav" aria-label="Primary navigation">
+          {navigation.map(({ to, label, end }) => (
+            <NavLink key={to} to={to} end={end} className={({ isActive }) => (isActive ? 'active' : undefined)}>
+              {label}
+            </NavLink>
+          ))}
+          <Link className="button button-small" to="/contact">Start a conversation <ArrowUpRight size={15} /></Link>
+        </nav>
+        <button
+          className="menu-toggle"
+          type="button"
+          aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-expanded={menuOpen}
+          aria-controls="mobile-navigation"
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          {menuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
+        </button>
+      </div>
+      {menuOpen && (
+        <nav id="mobile-navigation" className="mobile-nav shell" aria-label="Mobile navigation">
+          {navigation.map(({ to, label, end }) => (
+            <NavLink key={to} to={to} end={end} onClick={closeMenu} className={({ isActive }) => (isActive ? 'active' : undefined)}>
+              {label}<ChevronRight size={17} aria-hidden="true" />
+            </NavLink>
+          ))}
+          <Link className="button button-small" to="/contact" onClick={closeMenu}>Start a conversation <ArrowUpRight size={15} /></Link>
+        </nav>
+      )}
+    </header>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="site-footer">
+      <div className="shell footer-grid">
+        <div>
+          <Wordmark />
+          <p>Independent cloud and AI architecture for secure, governable delivery.</p>
+        </div>
+        <div className="footer-links" aria-label="Contact links">
+          <a href={EMAIL_URL}><Mail size={16} /> Email</a>
+          <a href={LINKEDIN_URL} target="_blank" rel="noreferrer"><Linkedin size={16} /> LinkedIn</a>
+          <a href={GITHUB_URL} target="_blank" rel="noreferrer"><Github size={16} /> GitHub</a>
+        </div>
+        <p className="copyright">© {new Date().getFullYear()} Angel Godd-Santana. U.S. remote.</p>
+      </div>
+    </footer>
+  );
+}
+
+function Eyebrow({ children }) {
+  return <p className="eyebrow"><span />{children}</p>;
+}
+
+function SectionHeading({ eyebrow, title, children, align = 'left' }) {
+  return (
+    <div className={`section-heading ${align === 'center' ? 'centered' : ''}`}>
+      {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
+      <h2>{title}</h2>
+      {children && <p>{children}</p>}
+    </div>
+  );
+}
+
+function ButtonLink({ to, href, children, variant = 'primary', external = false }) {
+  const classes = `button button-${variant}`;
+  const contents = <>{children} {external ? <ArrowUpRight size={17} /> : <ArrowRight size={17} />}</>;
+
+  if (href) {
+    return <a className={classes} href={href} target={external ? '_blank' : undefined} rel={external ? 'noreferrer' : undefined}>{contents}</a>;
+  }
+  return <Link className={classes} to={to}>{contents}</Link>;
+}
+
+function HomePage() {
+  const pillars = [
+    {
+      icon: <CloudCog />,
+      title: 'Architecture that can operate',
+      copy: 'Turn a cloud or AI initiative into a clear target architecture, migration path, and practical operating model.',
+    },
+    {
+      icon: <ShieldCheck />,
+      title: 'Identity and governance by design',
+      copy: 'Bring Microsoft Entra ID, access patterns, guardrails, and regulated-environment realities into the work early.',
+    },
+    {
+      icon: <Bot />,
+      title: 'AI with a delivery plan',
+      copy: 'Evaluate AI-enabled workflows against security, ownership, operational readiness, and measurable business needs.',
+    },
+  ];
+
+  return (
+    <>
+      <section className="hero-section">
+        <div className="shell hero-grid">
+          <div className="hero-copy">
+            <Eyebrow>Career profile + independent practice</Eyebrow>
+            <h1>Principal cloud and AI architecture for work that has to hold up.</h1>
+            <p className="hero-lede">I help organizations design secure, governable cloud and AI platforms—from architecture and identity through production delivery.</p>
+            <div className="button-row">
+              <ButtonLink to="/resume">View résumé</ButtonLink>
+              <ButtonLink to="/work-with-me" variant="secondary">Explore how I can help</ButtonLink>
+            </div>
+            <div className="availability-note"><span className="status-dot" /> Open to U.S.-remote principal-level opportunities and selected advisory engagements.</div>
+          </div>
+          <div className="architecture-card" aria-label="Angel Godd-Santana, Principal Cloud and AI Platform Architect">
+            <img className="professional-portrait" src="/images/angel-godd-santana-headshot.png" alt="Angel Godd-Santana in a suit and tie" />
+            <div className="portrait-overlay" />
+            <div className="card-topline"><Sparkles size={17} /> Principal platform perspective</div>
+            <div className="portrait-label"><img src="/ags-mark.svg" alt="" /><span><strong>Angel Godd-Santana</strong><small>Cloud &amp; AI Platform Architect</small></span></div>
+            <div className="architecture-list">
+              <span>Cloud architecture</span>
+              <span>Identity &amp; governance</span>
+              <span>Secure AI enablement</span>
+            </div>
+            <div className="architecture-stats">
+              <div><strong>20+</strong><span>years in IT &amp; infrastructure</span></div>
+              <div><strong>10+</strong><span>years with Azure environments</span></div>
+              <div><strong>U.S.</strong><span>remote availability</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="trust-strip">
+        <div className="shell trust-items" aria-label="Technology experience">
+          <span>Microsoft Azure</span><i /> <span>Azure Government</span><i /> <span>Microsoft Entra ID</span><i /> <span>AWS</span><i /> <span>Google Cloud</span>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="shell">
+          <SectionHeading eyebrow="What I bring" title="A technical leader who connects direction to delivery.">
+            The work is not about adding more tools. It is about making the architecture, controls, and team practices reinforce each other.
+          </SectionHeading>
+          <div className="pillar-grid">
+            {pillars.map((pillar) => (
+              <article className="pillar" key={pillar.title}>
+                <div className="icon-box">{pillar.icon}</div>
+                <h3>{pillar.title}</h3>
+                <p>{pillar.copy}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section section-muted">
+        <div className="shell outcomes-layout">
+          <div>
+            <SectionHeading eyebrow="Selected focus areas" title="The platform work I am built for.">
+              Experience across enterprise and government-facing cloud environments, with a practical bias toward resilient, supportable systems.
+            </SectionHeading>
+          </div>
+          <div className="outcome-list">
+            <article><span>01</span><div><h3>Cloud governance and operating standards</h3><p>Azure Lighthouse, Entra ID, multi-tenant administration, and governance patterns that teams can follow.</p></div></article>
+            <article><span>02</span><div><h3>Cross-cloud identity architecture</h3><p>Identity federation, SAML SSO, access design, and cloud-security considerations across Azure, AWS, GCP, and hybrid environments.</p></div></article>
+            <article><span>03</span><div><h3>Regulated cloud delivery</h3><p>Architecture and operations experience that accounts for Azure Government and FedRAMP Moderate environment requirements.</p></div></article>
+            <article><span>04</span><div><h3>AI-enabled modernization</h3><p>A disciplined route from AI workflow opportunity to a secure, governable, supportable implementation plan.</p></div></article>
+          </div>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="shell pathway-grid">
+          <article className="pathway-card pathway-career">
+            <BriefcaseBusiness className="pathway-icon" />
+            <p className="card-label">For hiring leaders</p>
+            <h2>Looking for a principal-level cloud architect?</h2>
+            <p>See the career profile, technical focus, and downloadable ATS-ready résumé.</p>
+            <ButtonLink to="/resume" variant="dark">Review résumé</ButtonLink>
+          </article>
+          <article className="pathway-card pathway-consulting">
+            <Sparkles className="pathway-icon" />
+            <p className="card-label">For organizations</p>
+            <h2>Need senior architectural direction on a focused initiative?</h2>
+            <p>Explore scoped cloud, identity, governance, and AI readiness engagements.</p>
+            <ButtonLink to="/work-with-me" variant="outline">View engagement options</ButtonLink>
+          </article>
+        </div>
+      </section>
+    </>
+  );
+}
+
+const offers = [
+  {
+    number: '01',
+    title: 'Architecture & AI readiness sprint',
+    description: 'A structured assessment for a cloud or AI initiative that needs an informed path forward before more implementation spend.',
+    items: ['Current-state and constraint review', 'Target architecture and guardrail recommendations', 'Prioritized delivery roadmap'],
+  },
+  {
+    number: '02',
+    title: 'Cloud governance & identity design',
+    description: 'Define the operating patterns that let platforms scale without losing clarity, accountability, or security.',
+    items: ['Azure and multi-cloud governance patterns', 'Microsoft Entra ID and access architecture', 'Federation and administrative-boundary review'],
+  },
+  {
+    number: '03',
+    title: 'Fractional platform leadership',
+    description: 'Senior technical direction for teams that need architectural judgment, stakeholder alignment, and delivery discipline.',
+    items: ['Architecture decision support', 'Modernization and migration planning', 'Team mentoring and operating standards'],
+  },
+];
+
+function WorkWithMePage() {
+  return (
+    <>
+      <section className="page-hero page-hero-work">
+        <div className="shell narrow-copy">
+          <Eyebrow>Independent engagements</Eyebrow>
+          <h1>Make cloud and AI initiatives ready to operate.</h1>
+          <p>I am available to help leaders who need a clear technical path—from cloud architecture and identity through governance, AI readiness, and delivery planning.</p>
+          <ButtonLink to="/contact">Discuss an initiative</ButtonLink>
+        </div>
+      </section>
+      <section className="section">
+        <div className="shell">
+          <SectionHeading eyebrow="Ways to engage" title="Focused senior help, shaped around an outcome.">
+            Potential engagements start with the problem, context, and decision needed—not a pre-packaged technology sale.
+          </SectionHeading>
+          <div className="offer-grid">
+            {offers.map((offer) => (
+              <article className="offer-card" key={offer.number}>
+                <span className="offer-number">{offer.number}</span>
+                <h2>{offer.title}</h2>
+                <p>{offer.description}</p>
+                <ul>{offer.items.map((item) => <li key={item}><Check size={16} />{item}</li>)}</ul>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+      <section className="section section-muted">
+        <div className="shell split-callout">
+          <div><Eyebrow>Good fit</Eyebrow><h2>When a decision needs both architectural depth and operating realism.</h2></div>
+          <p>Typical starting points include an unclear cloud direction, an AI use case without sufficient safeguards, identity complexity across platforms, or a delivery team that needs a technical operating model.</p>
+        </div>
+      </section>
+    </>
+  );
+}
+
+const resumeExperience = [
+  {
+    title: 'Senior Cloud Governance & AI Operations Engineer',
+    company: 'Cloud Software Group (formerly Citrix Systems)',
+    period: 'Sep 2018 – Aug 2025 · Remote',
+    bullets: [
+      'Led multi-tenant Azure governance and Microsoft Entra ID security integration across commercial and government-facing cloud environments.',
+      'Contributed to Azure Government and FedRAMP Moderate authorization work through identity, governance, and cloud-security patterns.',
+      'Architected cross-cloud identity federation between Azure Government and AWS Gov using SAML SSO.',
+    ],
+  },
+  {
+    title: 'Founder & Principal',
+    company: 'Godd Technologies LLC',
+    period: 'Sep 2025 – Present · Independent practice',
+    bullets: [
+      'Re-established a previously dormant LLC as an independent cloud and AI platform architecture practice in September 2025, after completing a full-time enterprise role.',
+      'Building service offerings, reference architectures, and delivery standards across Azure, GCP, identity, cloud governance, and AI-enabled workflow automation.',
+      'Available for selected U.S.-remote cloud and AI architecture advisory or project engagements.',
+    ],
+  },
+  {
+    title: 'Manager of IT & Cloud Operations',
+    company: 'Vertice Technologies',
+    period: 'Oct 2017 – Feb 2018 · Miami, FL',
+    bullets: ['Directed distributed operations for Azure infrastructure optimization, information-security operations, and legacy-server migration.'],
+  },
+  {
+    title: 'Senior Azure Cloud Systems Architect/Engineer',
+    company: 'Campus Management Corporation',
+    period: '2011 – Aug 2017 · Remote',
+    bullets: ['Architected, deployed, and maintained Azure virtual-machine, on-premises, and private-cloud environments for critical internal and customer systems.'],
+  },
+];
+
+function ResumePage() {
+  return (
+    <>
+      <section className="page-hero page-hero-resume">
+        <div className="shell resume-hero-layout">
+          <div className="narrow-copy">
+            <Eyebrow>Career profile</Eyebrow>
+            <h1>Principal Cloud &amp; AI Platform Architect</h1>
+            <p>Principal-level architecture, governance, identity, and platform-delivery experience for complex enterprise and government-facing cloud environments.</p>
+          </div>
+          <div className="download-card">
+            <FileText aria-hidden="true" />
+            <strong>ATS-ready résumé</strong>
+            <span>Available in PDF and Word formats.</span>
+            <div className="download-actions">
+              <a href={RESUME_PDF} download><Download size={16} /> PDF</a>
+              <a href={RESUME_DOCX} download><Download size={16} /> DOCX</a>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section className="section resume-section">
+        <div className="shell resume-layout">
+          <aside className="resume-sidebar">
+            <div><p className="side-label">Based in</p><strong>Miami–Fort Lauderdale, FL</strong><span>U.S. remote</span></div>
+            <div><p className="side-label">Core platforms</p><span>Microsoft Azure<br />Azure Government<br />AWS · Google Cloud Platform</span></div>
+            <div><p className="side-label">Focus</p><span>Cloud architecture<br />Identity &amp; governance<br />Secure AI enablement<br />Platform delivery</span></div>
+            <a className="side-contact" href={EMAIL_URL}><Mail size={16} /> Contact Angel</a>
+          </aside>
+          <div className="resume-main">
+            <section>
+              <h2>Executive summary</h2>
+              <p>Principal-level cloud architect with 20+ years in IT and infrastructure, including 10+ years designing and operating Azure environments. Brings enterprise depth across Azure, Azure Government, AWS, Google Cloud Platform, identity architecture, cloud governance, FedRAMP-aware delivery, and AI platform enablement.</p>
+            </section>
+            <section>
+              <h2>Core competencies</h2>
+              <div className="competency-grid">
+                <p><strong>Cloud platforms</strong>Microsoft Azure, Azure Government, AWS, GCP, hybrid and multi-cloud architecture, IaaS</p>
+                <p><strong>Governance &amp; identity</strong>Azure Lighthouse, Microsoft Entra ID, IAM, SAML SSO, Azure AD Connect, cloud security</p>
+                <p><strong>Platform delivery</strong>Cloud migration, technical architecture, CI/CD, Azure DevOps, GitHub Actions, Terraform, Bicep, Python</p>
+                <p><strong>AI enablement</strong>Azure AI Foundry, OpenAI APIs, Gemini, AI-enabled workflow automation, RAG and agent concepts</p>
+              </div>
+            </section>
+            <section>
+              <h2>Professional experience</h2>
+              <div className="experience-list">
+                {resumeExperience.map((role) => (
+                  <article key={`${role.title}-${role.company}`}>
+                    <p className="experience-period">{role.period}</p>
+                    <h3>{role.title}</h3>
+                    <h4>{role.company}</h4>
+                    <ul>{role.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}</ul>
+                  </article>
+                ))}
+              </div>
+            </section>
+            <section className="education-row">
+              <div><h2>Education</h2><p><strong>Master of Science, Computer/Information Systems</strong><br />University of Phoenix</p><p><strong>Bachelor of Science, Business/Information Systems</strong><br />University of Phoenix</p><p><strong>Doctoral coursework, Management of Information Systems</strong><br />University of Phoenix · 39 credits completed; dissertation not completed</p></div>
+              <div><h2>Earlier experience</h2><p>Progressive systems administration, software architecture, SQL/.NET development, network operations, and IT leadership experience from 2000–2011.</p></div>
+            </section>
+          </div>
+        </div>
+      </section>
+      <section className="section section-muted compact-section">
+        <div className="shell resume-cta"><div><Eyebrow>Next step</Eyebrow><h2>Let’s talk about the platform challenge in front of you.</h2></div><ButtonLink to="/contact">Contact Angel</ButtonLink></div>
+      </section>
+    </>
+  );
+}
+
+function AboutPage() {
+  return (
+    <>
+      <section className="page-hero page-hero-about">
+        <div className="shell narrow-copy">
+          <Eyebrow>About Angel</Eyebrow>
+          <h1>Architectural thinking grounded in operational experience.</h1>
+          <p>I work at the intersection of cloud architecture, identity, governance, and modern delivery—where strong technical decisions need to survive contact with people, process, and production.</p>
+        </div>
+      </section>
+      <section className="section">
+        <div className="shell prose-layout">
+          <div className="prose-statement"><p className="large-quote">“Good platform architecture gives teams a secure foundation to move with confidence—not a heavier system to work around.”</p></div>
+          <div className="prose-copy">
+            <p>My background spans enterprise cloud operations, Azure and Azure Government environments, Microsoft Entra ID, cross-cloud identity, and migration work. I bring the same systems perspective to AI enablement: start with the intended outcome, design the controls and operating model, then make delivery practical for the team that will own it.</p>
+            <p>Today, I am open to U.S.-remote Principal Cloud Architect, AI Platform Architect, Cloud Governance, and Cloud/DevSecOps Architect opportunities. I am also available for focused independent engagements where senior technical direction can reduce risk and clarify the path to delivery.</p>
+            <div className="about-links"><ButtonLink href={LINKEDIN_URL} external variant="secondary">Connect on LinkedIn</ButtonLink><ButtonLink to="/resume" variant="ghost">Read full résumé</ButtonLink></div>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
+
+function ContactPage() {
+  return (
+    <section className="contact-page">
+      <div className="shell contact-layout">
+        <div>
+          <Eyebrow>Contact</Eyebrow>
+          <h1>Start with the real problem.</h1>
+          <p>Whether you are hiring for a principal technical role or evaluating a focused cloud or AI initiative, send a concise note about the outcome you need.</p>
+          <p className="contact-note">I am based in South Florida and available for U.S.-remote opportunities and selected engagements.</p>
+        </div>
+        <div className="contact-card">
+          <a href={EMAIL_URL} className="contact-method"><span className="icon-box"><Mail /></span><span><small>Email</small><strong>goddsantana@gmail.com</strong></span><ArrowUpRight /></a>
+          <a href={LINKEDIN_URL} className="contact-method" target="_blank" rel="noreferrer"><span className="icon-box"><Linkedin /></span><span><small>LinkedIn</small><strong>Angel Godd-Santana</strong></span><ArrowUpRight /></a>
+          <a href={RESUME_PDF} className="contact-method" download><span className="icon-box"><Download /></span><span><small>Career profile</small><strong>Download résumé (PDF)</strong></span><ArrowUpRight /></a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function NotFoundPage() {
+  return (
+    <section className="not-found">
+      <div className="shell narrow-copy"><Eyebrow>404</Eyebrow><h1>That page is not here.</h1><p>The rest of the site is available from the home page.</p><ButtonLink to="/">Go home</ButtonLink></div>
+    </section>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <ScrollToTop />
+      <div className="site-shell">
+        <Header />
+        <main>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/work-with-me" element={<WorkWithMePage />} />
+            <Route path="/resume" element={<ResumePage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
+    </BrowserRouter>
+  );
+}
+
+export default App;

@@ -1,88 +1,49 @@
-AI Assisted Cloud Architect/Engineer | Remote Work Specialist | Azure • GCP • AWS Expert
+# LinkedIn profile — aligned copy
 
-Transforming cloud infrastructure through AI-powered solutions and generative AI integration. Experienced cloud professional reinventing my career to leverage cutting-edge AI technologies including OpenAI APIs and Gemini AI for enhanced cloud architecture and automation.
+## Headline
 
-🎯 SEEKING: Full-time REMOTE positions only
-🏛️ TARGET: US Government contracts and medium-sized organizations migrating to cloud
-☁️ EXPERTISE: Multi-cloud deployments (Azure, GCP, AWS) with AI-assisted optimization
+Principal Cloud & AI Platform Architect | Azure Government, FedRAMP, Entra ID & Multi-Cloud Governance
 
-Recent accomplishments at Cloud Software Group include multiple Azure Lighthouse implementations and new Azure Active Directory (Entra ID) tenant deployments, streamlining multi-tenant governance and identity management.
+## About
 
-Specializing in:
-• AI-assisted cloud architecture and automation
-• Azure Lighthouse technology implementation  
-• Entra ID and identity management solutions
-• Multi-cloud Infrastructure as a Service (IaaS) deployments
-• OpenAI and Gemini API integration
-• Cloud migration strategies and governance
-• NFT minting pipeline development
+I design and operationalize secure cloud platforms for organizations that need architecture, governance, identity, and delivery to work together. My background spans Azure, Azure Government, AWS, Google Cloud Platform, cross-cloud identity, cloud migration, and AI-enabled platform modernization.
 
-Ready to bring visionary AI-enhanced cloud solutions to forward-thinking organizations embracing digital transformation and cloud-first strategies.
+Across enterprise and government-facing environments, I have led Azure Lighthouse and Microsoft Entra ID governance patterns, supported Azure Government and FedRAMP Moderate authorization work, and designed SAML SSO federation between Azure Government and AWS Gov. I pair technical depth with mentoring and stakeholder communication so teams can turn security, compliance, and modernization requirements into runnable operating standards.
 
----
+I am interested in U.S.-remote Principal Cloud Architect, AI Platform Architect, Cloud Governance, and Cloud/DevSecOps Architect opportunities where I can set technical direction while staying close to delivery.
 
-**Experience**
+## Experience
 
-**Senior Cloud Governance Ops Engineer**
-Cloud Software Group (formerly Citrix Systems)
-Sep 2018 - Present · 7 yrs 1 mo
-Miami/Fort Lauderdale Area
+**Senior Cloud Governance & AI Operations Engineer**
+Cloud Software Group (formerly Citrix Systems) · Full-time
+September 2018 – August 2025 · Remote
 
-Key Accomplishments: 
-• Successfully implemented multiple Azure Lighthouse deployments, streamlining multi-tenant governance and identity management
-• Deployed new Azure Active Directory (Entra ID) tenants, enhancing security and user access management
-• Instrumental in assisting Azure Government cloud team achieve FedRAMP Moderate authorization (2019-2021)
-• Executed deployment and integration of Azure Government Active Directory for FedRAMP controls
-• Architected Identity Access Management solutions integrating Azure Gov and AWS Gov using SAML Single-Sign-On
-• Created and deployed over 700 Azure subscriptions in commercial and government environments
-• Led AWS SAML Single-Sign-On implementation in commercial environments
-• Mentored and trained multiple junior engineers in complex cloud deployments and Azure IaaS migrations
-• Pioneer in encouraging Generative AI adoption using Azure Foundry OpenAI platform
-• Fostered and taught engineers AI technology integration in cloud workflows
+- Led multi-tenant Azure governance and Microsoft Entra ID security integration across commercial and government-facing cloud environments.
+- Contributed to Azure Government and FedRAMP Moderate authorization work through identity, governance, and cloud-security patterns.
+- Architected cross-cloud identity federation between Azure Government and AWS Gov using SAML SSO.
 
-**Azure Cloud Architect - Contractor**
+**Founder & Principal**
+Godd Technologies LLC · Independent practice
+September 2025 – Present
+
+- Re-established a previously dormant LLC as an independent cloud and AI platform architecture practice in September 2025, after completing a full-time enterprise role.
+- Building service offerings, reference architectures, and delivery standards across Azure, GCP, identity, cloud governance, and AI-enabled workflow automation.
+- Available for selected U.S.-remote cloud and AI architecture advisory or project engagements.
+
+**Azure Cloud Architect — Independent Contractor**
 Godd Technologies, LLC.
-Feb 2018 - Sep 2018 · 8 mos
-Homestead, FL
+February 2018 – September 2018
 
-Day to day duties and objectives included but not limited to, architecting, deploying, and maintaining virtual machines in Azure Cloud Computing platform (IaaS solution) as well as on-premise private…
+Historic contract position; retain as a separate completed engagement.
 
-**Manager of IT, Cloud Operations**
-Vertice Technologies
-Oct 2017 - Feb 2018 · 5 mos
-9350 South Dixie Highway
+## Education
 
-Daily duties and objectives included but not limited to, architecting, deploying, and maintaining virtual machines in Azure Cloud Computing platform (IaaS solution) as well as on-premise private…
+- Master of Science, Computer/Information Systems — University of Phoenix
+- Bachelor of Science, Business/Information Systems — University of Phoenix
+- Doctoral coursework in Management of Information Systems — University of Phoenix (39 credits completed; dissertation not completed)
 
-**Campus Management Corp.**
-12 yrs 1 mo
+## Skills to feature
 
-**Azure Cloud Solutions Architect/Engineer**
-May 2011 - Aug 2017 · 6 yrs 4 mos
+Microsoft Azure, Azure Government, Microsoft Entra ID, Azure Lighthouse, AWS, Google Cloud Platform, IAM, SAML SSO, cloud governance, cloud migration, FedRAMP-aware delivery, Azure AI Foundry, OpenAI APIs, Python, SQL, technical architecture, mentoring.
 
-Daily duties and objectives included but not limited to, architecting, deploying, and maintaining virtual machines in Azure Cloud Computing platform (IaaS solution) as well as on-premise private…
-
----
-
-**Education**
-
-**University of Phoenix**
-Master of Business Administration (M.B.A.), Business Administration and Management, General
-2009 - 2011
-
-**University of Phoenix**
-Bachelor of Science (B.S.), Information Technology
-2005 - 2008
-
----
-
-**Skills**
-
-*   OpenAI API
-*   Azure Lighthouse
-*   Generative AI
-*   Python (Programming Language)
-*   Amazon Web Services (AWS)
-*   C (Programming Language)
-*   SQL
-
+> Confirm the exact transcript title before changing any degree wording in a public profile or résumé.
