@@ -1,5 +1,6 @@
 import {
   ArrowRight,
+  ArrowUpRight,
   Bot,
   Building2,
   CheckCircle2,
@@ -20,7 +21,7 @@ import './SelectedWork.css';
 
 const proofPoints = [
   'Architecture decisions and controls, not client implementation details',
-  'Security-reviewed public releases planned before any GitHub showcase links',
+  'Security-reviewed public references, purpose-built for safe sharing',
   'Redacted briefs and walkthroughs available for qualified conversations',
 ];
 
@@ -121,7 +122,7 @@ function SecureAiDiagram() {
 const workItems = [
   {
     id: 'lighthouse',
-    eyebrow: 'Private implementation · redacted reference',
+    eyebrow: 'Public clean-room reference · proprietary',
     title: 'Azure Lighthouse Governance Reference',
     summary: 'A reusable governance approach for delegated Azure subscription operations across tenant boundaries—built around scoped roles, repeatable onboarding, oversight, and clean offboarding.',
     highlights: ['Role-and-permission mapping', 'Onboarding and validation sequence', 'Delegated-access guardrails'],
@@ -139,12 +140,27 @@ const workItems = [
   },
   {
     id: 'ai-platform',
-    eyebrow: 'Emerging capability · reference architecture',
+    eyebrow: 'Public clean-room reference · proprietary',
     title: 'Secure AI Platform Reference',
     summary: 'A vendor-neutral blueprint for taking an AI use case from experiment to governed delivery, with identity, secrets, policy, evaluation, observability, and human review designed in from the start.',
     highlights: ['Governed AI workflow design', 'Data and model boundaries', 'Evaluation and review controls'],
     diagram: <SecureAiDiagram />,
     accent: 'ai',
+  },
+];
+
+const showcaseRepositories = [
+  {
+    label: 'View Lighthouse reference',
+    href: 'https://github.com/AngelGoddTech/azure-lighthouse-governance-reference',
+  },
+  {
+    label: 'View Secure AI reference',
+    href: 'https://github.com/AngelGoddTech/secure-ai-platform-reference',
+  },
+  {
+    label: 'View career-site source',
+    href: 'https://github.com/AngelGoddTech/angelgoddsantana-me',
   },
 ];
 
@@ -162,7 +178,7 @@ export function SelectedWork() {
             <span className="selected-work-trust-icon"><ShieldCheck size={21} aria-hidden="true" /></span>
             <div>
               <strong>Private by design</strong>
-              <p>Implementation repositories remain private. Any public GitHub release is pending a security review and will be purpose-built for sharing.</p>
+              <p>Private delivery repositories remain private. The public references below are clean-room, security-reviewed, and purpose-built for safe sharing.</p>
             </div>
           </aside>
         </div>
@@ -208,8 +224,15 @@ export function SelectedWork() {
             <h2>Public proof should be useful—and safe to share.</h2>
           </div>
           <div className="selected-work-github-copy">
-            <p>Three purpose-built showcase repositories are planned: a sanitized Azure Lighthouse governance reference, a security-reviewed Azure AI platform reference, and this career site. They will be linked here only after security review—not by exposing private delivery repositories.</p>
-            <span className="selected-work-github-status"><Github size={17} aria-hidden="true" /> GitHub releases pending security review</span>
+            <p>These three purpose-built repositories show a clean-room Azure Lighthouse governance reference, a security-first AI platform reference, and the source for this career site. They are reference-only and proprietary; private client, employer, and production repositories remain private.</p>
+            <div className="button-row" aria-label="Curated GitHub repositories">
+              {showcaseRepositories.map((repository) => (
+                <a className="button button-outline" href={repository.href} key={repository.href} target="_blank" rel="noreferrer">
+                  {repository.label} <ArrowUpRight size={16} aria-hidden="true" />
+                </a>
+              ))}
+            </div>
+            <span className="selected-work-github-status"><Github size={17} aria-hidden="true" /> Security-reviewed public references</span>
           </div>
         </div>
       </section>
