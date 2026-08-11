@@ -10,7 +10,6 @@ import {
   CloudCog,
   Download,
   FileText,
-  Github,
   Linkedin,
   Mail,
   Menu,
@@ -19,17 +18,18 @@ import {
   X,
 } from 'lucide-react';
 import './App.css';
+import SelectedWork from './components/SelectedWork';
 
 const RESUME_PDF = '/documents/Angel_Godd_Santana_Principal_Cloud_AI_Architect_Resume.pdf';
 const RESUME_DOCX = '/documents/Angel_Godd_Santana_Principal_Cloud_AI_Architect_Resume.docx';
 const LINKEDIN_URL = 'https://www.linkedin.com/in/angelgoddsantana/';
-const GITHUB_URL = 'https://github.com/AngelGoddTech';
 const EMAIL_URL = 'mailto:goddsantana@gmail.com';
 
 const navigation = [
   { to: '/', label: 'Home', end: true },
-  { to: '/work-with-me', label: 'Work with me' },
+  { to: '/selected-work', label: 'Selected Work' },
   { to: '/resume', label: 'Résumé' },
+  { to: '/work-with-me', label: 'Work with me' },
   { to: '/about', label: 'About' },
   { to: '/contact', label: 'Contact' },
 ];
@@ -109,7 +109,7 @@ function Footer() {
         <div className="footer-links" aria-label="Contact links">
           <a href={EMAIL_URL}><Mail size={16} /> Email</a>
           <a href={LINKEDIN_URL} target="_blank" rel="noreferrer"><Linkedin size={16} /> LinkedIn</a>
-          <a href={GITHUB_URL} target="_blank" rel="noreferrer"><Github size={16} /> GitHub</a>
+          <Link to="/selected-work"><ShieldCheck size={16} /> Selected work</Link>
         </div>
         <p className="copyright">© {new Date().getFullYear()} Angel Godd-Santana. U.S. remote.</p>
       </div>
@@ -216,6 +216,22 @@ function HomePage() {
         </div>
       </section>
 
+      <section className="section proof-preview-section">
+        <div className="shell proof-preview">
+          <div>
+            <Eyebrow>Selected architecture evidence</Eyebrow>
+            <h2>Show the judgment behind the implementation.</h2>
+            <p>Explore redacted architecture references for cloud governance, cross-cloud identity, and secure AI platform delivery. The emphasis is on the controls, operating model, and decisions that make a system trustworthy.</p>
+            <ButtonLink to="/selected-work" variant="secondary">Explore selected work</ButtonLink>
+          </div>
+          <div className="proof-preview-stack" aria-label="Architecture evidence themes">
+            <span>Azure Lighthouse governance</span>
+            <span>Cross-cloud identity boundaries</span>
+            <span>Secure AI delivery controls</span>
+          </div>
+        </div>
+      </section>
+
       <section className="section section-muted">
         <div className="shell outcomes-layout">
           <div>
@@ -248,6 +264,30 @@ function HomePage() {
             <p>Explore scoped cloud, identity, governance, and AI readiness engagements.</p>
             <ButtonLink to="/work-with-me" variant="outline">View engagement options</ButtonLink>
           </article>
+        </div>
+      </section>
+
+      <section className="section ai-roadmap-section">
+        <div className="shell ai-roadmap-layout">
+          <div>
+            <Eyebrow>AI product roadmap</Eyebrow>
+            <h2>AI capabilities, designed to earn trust before they automate anything.</h2>
+            <p>Godd Technologies is developing a practical AI layer for this site: useful guidance, secure pre-interview preparation, and human-reviewed next steps—not an anonymous black box.</p>
+          </div>
+          <div className="ai-roadmap-cards">
+            <article>
+              <Bot aria-hidden="true" />
+              <p className="card-label">Planned capability</p>
+              <h3>Architecture guide</h3>
+              <p>A future assistant that will help visitors frame a cloud or AI challenge and find relevant reference material before a confidential conversation.</p>
+            </article>
+            <article>
+              <ShieldCheck aria-hidden="true" />
+              <p className="card-label">Planned capability</p>
+              <h3>Pre-interview workspace</h3>
+              <p>A future, consent-based preparation flow for technical alignment. It will not make hiring decisions or collect sensitive information without clear permission.</p>
+            </article>
+          </div>
         </div>
       </section>
     </>
@@ -309,6 +349,12 @@ function WorkWithMePage() {
           <p>Typical starting points include an unclear cloud direction, an AI use case without sufficient safeguards, identity complexity across platforms, or a delivery team that needs a technical operating model.</p>
         </div>
       </section>
+      <section className="section evidence-callout-section">
+        <div className="shell evidence-callout">
+          <div><Eyebrow>How I work</Eyebrow><h2>Review the architecture evidence before we talk scope.</h2></div>
+          <div><p>See how cloud governance, identity, and secure AI delivery decisions are translated into reusable operating patterns.</p><ButtonLink to="/selected-work" variant="secondary">View selected work</ButtonLink></div>
+        </div>
+      </section>
     </>
   );
 }
@@ -322,6 +368,7 @@ const resumeExperience = [
       'Led multi-tenant Azure governance and Microsoft Entra ID security integration across commercial and government-facing cloud environments.',
       'Contributed to Azure Government and FedRAMP Moderate authorization work through identity, governance, and cloud-security patterns.',
       'Architected cross-cloud identity federation between Azure Government and AWS Gov using SAML SSO.',
+      'Supported cloud-governance operating standards and mentored engineering teams on cloud operations and governance.',
     ],
   },
   {
@@ -329,15 +376,15 @@ const resumeExperience = [
     company: 'Godd Technologies LLC',
     period: 'Sep 2025 – Present · Independent practice',
     bullets: [
-      'Re-established a previously dormant LLC as an independent cloud and AI platform architecture practice in September 2025, after completing a full-time enterprise role.',
-      'Building service offerings, reference architectures, and delivery standards across Azure, GCP, identity, cloud governance, and AI-enabled workflow automation.',
-      'Available for selected U.S.-remote cloud and AI architecture advisory or project engagements.',
+      'Re-established a dormant LLC after completing a full-time enterprise role; developing security-conscious cloud and AI platform architecture offerings for U.S.-remote engagements.',
+      'Build and validate redacted reference architectures, proofs of concept, and delivery standards across Azure, GCP, identity, cloud governance, and AI-enabled workflow automation.',
+      'Apply AI-assisted workflow techniques to accelerate research, solution design, documentation, prototype development, and delivery preparation—using human architecture, security, and quality gates before use.',
     ],
   },
   {
     title: 'Manager of IT & Cloud Operations',
     company: 'Vertice Technologies',
-    period: 'Oct 2017 – Feb 2018 · Miami, FL',
+    period: 'Oct 2017 – Feb 2018',
     bullets: ['Directed distributed operations for Azure infrastructure optimization, information-security operations, and legacy-server migration.'],
   },
   {
@@ -372,7 +419,7 @@ function ResumePage() {
       <section className="section resume-section">
         <div className="shell resume-layout">
           <aside className="resume-sidebar">
-            <div><p className="side-label">Based in</p><strong>Miami–Fort Lauderdale, FL</strong><span>U.S. remote</span></div>
+            <div><p className="side-label">Based in</p><strong>Homestead, Florida, USA</strong><span>Remote only</span></div>
             <div><p className="side-label">Core platforms</p><span>Microsoft Azure<br />Azure Government<br />AWS · Google Cloud Platform</span></div>
             <div><p className="side-label">Focus</p><span>Cloud architecture<br />Identity &amp; governance<br />Secure AI enablement<br />Platform delivery</span></div>
             <a className="side-contact" href={EMAIL_URL}><Mail size={16} /> Contact Angel</a>
@@ -380,7 +427,7 @@ function ResumePage() {
           <div className="resume-main">
             <section>
               <h2>Executive summary</h2>
-              <p>Principal-level cloud architect with 20+ years in IT and infrastructure, including 10+ years designing and operating Azure environments. Brings enterprise depth across Azure, Azure Government, AWS, Google Cloud Platform, identity architecture, cloud governance, FedRAMP-aware delivery, and AI platform enablement.</p>
+            <p>Principal Cloud &amp; AI Platform Architect with 20+ years in IT and infrastructure and 10+ years designing and operating Azure environments. Designs secure, governable cloud platforms across Azure, Azure Government, AWS, GCP, hybrid infrastructure, identity, cloud governance, and modernization delivery—now complemented by AI-enabled solution design, proof-of-concept development, and disciplined human review.</p>
             </section>
             <section>
               <h2>Core competencies</h2>
@@ -388,8 +435,13 @@ function ResumePage() {
                 <p><strong>Cloud platforms</strong>Microsoft Azure, Azure Government, AWS, GCP, hybrid and multi-cloud architecture, IaaS</p>
                 <p><strong>Governance &amp; identity</strong>Azure Lighthouse, Microsoft Entra ID, IAM, SAML SSO, Azure AD Connect, cloud security</p>
                 <p><strong>Platform delivery</strong>Cloud migration, technical architecture, CI/CD, Azure DevOps, GitHub Actions, Terraform, Bicep, Python</p>
-                <p><strong>AI enablement</strong>Azure AI Foundry, OpenAI APIs, Gemini, AI-enabled workflow automation, RAG and agent concepts</p>
+                <p><strong>AI-enabled solution delivery</strong>AI-assisted research, solution design, technical documentation, code review, workflow automation, and proof-of-concept development with human-in-the-loop security and quality validation</p>
               </div>
+            </section>
+            <section className="resume-evidence">
+              <h2>Selected architecture work</h2>
+              <p>Redacted architecture references cover Azure Lighthouse governance, cross-cloud identity, and security-first AI platform delivery. Private source and sensitive implementation details remain private by design.</p>
+              <ButtonLink to="/selected-work" variant="ghost">Explore selected work</ButtonLink>
             </section>
             <section>
               <h2>Professional experience</h2>
@@ -433,8 +485,9 @@ function AboutPage() {
           <div className="prose-statement"><p className="large-quote">“Good platform architecture gives teams a secure foundation to move with confidence—not a heavier system to work around.”</p></div>
           <div className="prose-copy">
             <p>My background spans enterprise cloud operations, Azure and Azure Government environments, Microsoft Entra ID, cross-cloud identity, and migration work. I bring the same systems perspective to AI enablement: start with the intended outcome, design the controls and operating model, then make delivery practical for the team that will own it.</p>
+            <p>Selected work shows the redacted architecture evidence behind that approach: cloud governance, identity boundaries, and secure AI delivery patterns designed for real-world ownership.</p>
             <p>Today, I am open to U.S.-remote Principal Cloud Architect, AI Platform Architect, Cloud Governance, and Cloud/DevSecOps Architect opportunities. I am also available for focused independent engagements where senior technical direction can reduce risk and clarify the path to delivery.</p>
-            <div className="about-links"><ButtonLink href={LINKEDIN_URL} external variant="secondary">Connect on LinkedIn</ButtonLink><ButtonLink to="/resume" variant="ghost">Read full résumé</ButtonLink></div>
+            <div className="about-links"><ButtonLink href={LINKEDIN_URL} external variant="secondary">Connect on LinkedIn</ButtonLink><ButtonLink to="/selected-work" variant="ghost">Explore selected work</ButtonLink><ButtonLink to="/resume" variant="ghost">Read full résumé</ButtonLink></div>
           </div>
         </div>
       </section>
@@ -450,7 +503,7 @@ function ContactPage() {
           <Eyebrow>Contact</Eyebrow>
           <h1>Start with the real problem.</h1>
           <p>Whether you are hiring for a principal technical role or evaluating a focused cloud or AI initiative, send a concise note about the outcome you need.</p>
-          <p className="contact-note">I am based in South Florida and available for U.S.-remote opportunities and selected engagements.</p>
+          <p className="contact-note">I work remotely from Homestead, Florida, USA and am available for U.S.-remote opportunities and selected engagements.</p>
         </div>
         <div className="contact-card">
           <a href={EMAIL_URL} className="contact-method"><span className="icon-box"><Mail /></span><span><small>Email</small><strong>goddsantana@gmail.com</strong></span><ArrowUpRight /></a>
@@ -479,6 +532,7 @@ function App() {
         <main>
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/selected-work" element={<SelectedWork />} />
             <Route path="/work-with-me" element={<WorkWithMePage />} />
             <Route path="/resume" element={<ResumePage />} />
             <Route path="/about" element={<AboutPage />} />

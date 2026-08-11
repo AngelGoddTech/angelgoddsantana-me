@@ -4,6 +4,10 @@
 
 Principal Cloud & AI Platform Architect | Azure Government, FedRAMP, Entra ID & Multi-Cloud Governance
 
+## Location and work preference
+
+Homestead, Florida, United States · Remote only
+
 ## About
 
 I design and operationalize secure cloud platforms for organizations that need architecture, governance, identity, and delivery to work together. My background spans Azure, Azure Government, AWS, Google Cloud Platform, cross-cloud identity, cloud migration, and AI-enabled platform modernization.
@@ -27,8 +31,8 @@ Godd Technologies LLC · Independent practice
 September 2025 – Present
 
 - Re-established a previously dormant LLC as an independent cloud and AI platform architecture practice in September 2025, after completing a full-time enterprise role.
-- Building service offerings, reference architectures, and delivery standards across Azure, GCP, identity, cloud governance, and AI-enabled workflow automation.
-- Available for selected U.S.-remote cloud and AI architecture advisory or project engagements.
+- Building and validating redacted reference architectures, proofs of concept, and delivery standards across Azure, GCP, identity, cloud governance, and AI-enabled workflow automation.
+- Applying AI-assisted workflow techniques to research, solution design, documentation, prototype development, and delivery preparation, with human architecture, security, and quality gates before use.
 
 **Azure Cloud Architect — Independent Contractor**
 Godd Technologies, LLC.
