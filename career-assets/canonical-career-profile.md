@@ -8,6 +8,10 @@ Principal Cloud Architect | Principal Cloud & AI Platform Architect | Cloud Gove
 
 This is the recruiter-first profile. Consulting language belongs on the website and LinkedIn Services/Featured areas, not in the headline.
 
+## Location and work preference
+
+Homestead, Florida, United States | Remote-only work
+
 ## LinkedIn headline
 
 Principal Cloud & AI Platform Architect | Azure Government, FedRAMP, Entra ID & Multi-Cloud Governance
@@ -34,13 +38,21 @@ Experience includes Azure Lighthouse, Microsoft Entra ID, SAML SSO, cloud migrat
 
 **Principal Cloud & AI Platform Architect**
 
-I help organizations design secure, governable cloud and AI platforms - from architecture and identity through production delivery.
+I help organizations design secure, governable cloud and AI platforms - from architecture and identity through production delivery. I pair established cloud, identity, and governance experience with AI-enabled research, solution design, proof-of-concept development, and disciplined human review.
+
+## AI-enabled delivery wording
+
+Use this language for the independent practice, website, and future portfolio work:
+
+AI-enabled solution delivery: AI-assisted research, solution design, technical documentation, code review, workflow automation, and proof-of-concept development, with human architecture, security, and quality validation before use.
+
+Do not attribute this capability to a previous employer unless it is independently confirmed. Do not present a proof of concept, reference architecture, or AI-assisted workflow as a client deployment, production outcome, or autonomous decision-making system.
 
 ## Independent-practice wording
 
 **Founder & Principal | Godd Technologies LLC | September 2025 - Present**
 
-Re-established a previously dormant LLC as an independent cloud and AI platform architecture practice in September 2025, after completing a full-time enterprise role. The practice is building service offerings, reference architectures, and delivery standards across Azure, GCP, identity, cloud governance, and AI-enabled workflow automation. Available for selected U.S.-remote cloud and AI architecture advisory or project engagements.
+Re-established a previously dormant LLC as an independent cloud and AI platform architecture practice in September 2025, after completing a full-time enterprise role. The practice is building and validating redacted reference architectures, proofs of concept, and delivery standards across Azure, GCP, identity, cloud governance, and AI-enabled workflow automation. AI-assisted workflow techniques accelerate research, solution design, documentation, prototype development, and delivery preparation; human architecture, security, and quality gates remain in place before use.
 
 ## Education wording
 
@@ -59,3 +71,4 @@ Re-established a previously dormant LLC as an independent cloud and AI platform 
 2. Use the LinkedIn headline and About copy above; keep detailed experience dates accurate to the profile.
 3. Use the public website résumé only after confirming the facts flagged above.
 4. Keep the public website, LinkedIn, and Indeed titles aligned; maintain platform-specific summaries.
+5. Use Homestead, Florida, United States and the remote-only work preference consistently; do not use Miami, Fort Lauderdale, or South Florida as a current location.
