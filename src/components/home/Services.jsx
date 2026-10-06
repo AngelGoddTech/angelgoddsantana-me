@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion as Motion } from 'framer-motion';
 import { Brain, Camera, CloudUpload, Gem } from 'lucide-react';
 
 const services = [
@@ -29,7 +29,7 @@ const Services = () => {
   return (
     <section id="services" className="py-20 bg-gray-900/20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.h2
+        <Motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.5 }}
@@ -37,10 +37,10 @@ const Services = () => {
           className="text-xl font-semibold text-cyan-400 uppercase tracking-widest mb-12"
         >
           Services
-        </motion.h2>
+        </Motion.h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {services.map((service, index) => (
-            <motion.div
+            <Motion.div
               key={service.title}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -57,7 +57,7 @@ const Services = () => {
                   <p className="text-gray-400 text-sm">{service.description}</p>
                 </div>
               </div>
-            </motion.div>
+            </Motion.div>
           ))}
         </div>
       </div>
