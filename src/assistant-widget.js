@@ -230,9 +230,9 @@
             });
             return closePromise;
         }
-        function finish(notice, phase = 'closed') {
+        function finish(notice, phase = 'closed', preserveToken = false) {
             clearTimer();
-            generation += 1;
+            if (!preserveToken) generation += 1;
             const token = generation;
             const hadCaptureAttempt = Boolean(session || pendingStart || stopping);
             const closed = stop();
@@ -240,7 +240,7 @@
                 notice: hadCaptureAttempt ? 'ending' : notice};
             publish();
             if (hadCaptureAttempt) closed.then(() => {
-                if (token !== generation || stopping) return;
+                if (token !== generation || stopping || (preserveToken && ['refusing', 'refused'].includes(state.notice))) return;
                 state = {...state, phase, notice: notice === 'declined' ? 'ended' : notice};
                 publish();
             });
@@ -280,16 +280,27 @@
             publish();
             let guardrailSeen = false;
             let capturedConversationId = null;
+            let connected = false;
+            const activateWhenUsable = () => {
+                if (token !== generation || state.phase !== 'connecting' || !connected || !session ||
+                    typeof session.isOpen !== 'function' || (state.mode === 'text' && typeof session.sendUserMessage !== 'function')) return;
+                try { if (session.isOpen() !== true) return; }
+                catch { finish('unavailable', 'unavailable'); return; }
+                state = {...state, phase: 'active', conversationId: capturedConversationId};
+                publish();
+            };
             const callbacks = {
                 onConnect: detail => {
-                    capturedConversationId = typeof detail?.conversationId === 'string' ? detail.conversationId : null;
+                    if (!capturedConversationId && typeof detail?.conversationId === 'string') capturedConversationId = detail.conversationId;
                     if (token !== generation || state.phase !== 'connecting') return;
-                    const id = capturedConversationId;
-                    state = {...state, phase: 'active', conversationId: id};
-                    publish();
+                    connected = true;
+                    state = {...state, conversationId: capturedConversationId};
+                    activateWhenUsable();
+                    if (state.phase === 'connecting') publish();
                 },
                 onDisconnect: () => {
                     if (token !== generation || stopping) return;
+                    if (pendingStart) { finish('ended', 'closed', true); return; }
                     clearTimer();
                     session = null;
                     // Retain the token for a guardrail event delivered just after disconnect.
@@ -324,23 +335,28 @@
                     options.onReviewNeeded?.({conversationId: capturedConversationId, source: SOURCE, event: 'guardrail_triggered'});
                 }
             };
-            let started;
-            try {
-                started = adapter.startSession({agentId: AGENT_ID, textOnly: state.mode === 'text', callbacks, consent,
-                    isCurrent: () => token === generation && ['connecting', 'active'].includes(state.phase) && state.consent === consent});
-            } catch {
-                if (token === generation) finish('unavailable', 'unavailable');
-                return false;
-            }
-            pendingStart = Promise.resolve(started);
-            pendingStart.then(value => {
+            let resolveStart;
+            let rejectStart;
+            // Install the pending promise before callbacks can run synchronously.
+            const started = new Promise((resolve, reject) => { resolveStart = resolve; rejectStart = reject; });
+            pendingStart = started;
+            started.then(value => {
                 if (!value || typeof value.endSession !== 'function') throw new TypeError('Missing disconnect control');
                 if (token !== generation || !['connecting', 'active'].includes(state.phase)) {
                     return endOnce(value);
                 }
                 session = value;
                 pendingStart = null;
+                activateWhenUsable();
             }).catch(() => { if (token === generation) finish('unavailable', 'unavailable'); });
+            try {
+                resolveStart(adapter.startSession({agentId: AGENT_ID, textOnly: state.mode === 'text', callbacks, consent,
+                    isCurrent: () => token === generation && ['connecting', 'active'].includes(state.phase) && state.consent === consent}));
+            } catch (error) {
+                rejectStart(error);
+                if (token === generation) finish('unavailable', 'unavailable');
+                return false;
+            }
             return true;
         }
         return Object.freeze({

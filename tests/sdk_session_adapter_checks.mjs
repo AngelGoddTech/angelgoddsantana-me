@@ -134,6 +134,97 @@ for (const path of PATHS) {
     blocked.request(); blocked.accept(); await settle();
     check(starts, beforeDenied, 'Production capture/runtime gates remain false despite available adapter');
 
+    // onConnect is not a returned usable handle: never publish active early.
+    let readyOptions, releaseReadyHandle, readinessEnds=0, readyOpen=true;
+    const readinessSent=[],readinessMessages=[],readinessStates=[];
+    const readyHandle={isOpen:()=>readyOpen,sendUserMessage:text=>readinessSent.push(text),endSession(){readinessEnds++;readyOpen=false;readyOptions.onDisconnect({reason:'user'});}};
+    const readinessAdapter=api.createSdkAdapter({loadClient:async()=>({Conversation:{startSession(options){
+        readyOptions=options;options.onConversationCreated(readyHandle);options.onConnect({conversationId:'conv_handle_after_connect'});
+        options.onMessage({role:'agent',message:'Invented early greeting'});
+        return new Promise(resolve=>{releaseReadyHandle=()=>resolve(readyHandle);});
+    }}})});
+    const readinessGate=api.createConsentGate({verified,adapter:readinessAdapter,onState:s=>readinessStates.push(s.phase),onMessage:m=>readinessMessages.push(m)});
+    readinessGate.request();readinessGate.accept();await settle();
+    check(readinessGate.snapshot().phase,'connecting','Early onConnect does not enable composer');
+    check(readinessGate.snapshot().conversationId,'conv_handle_after_connect','Record conversation ID while handle is pending');
+    check(readinessStates.includes('active'),false,'No early active publication');
+    check(readinessGate.send('Invented early manual send'),false,'Pending handle cannot accept text');
+    check(readinessSent.length,0,'No queued or automatic provider message');
+    check(readinessMessages.filter(m=>m.role==='user').length,0,'No fabricated local user acknowledgement');
+    releaseReadyHandle();await settle();
+    check(readinessGate.snapshot().phase,'active','Connected and usable handle publish active together');
+    check(readinessSent.length,0,'Handle resolution does not send retained input');
+    check(readinessGate.send('Invented manual send after ready'),true,'Operator sends again manually after readiness');
+    check(readinessSent,['Invented manual send after ready'],'Exactly one explicit text send');
+    check(readinessMessages.filter(m=>m.role==='user').length,1,'One local user append for successful manual send');
+    readinessGate.reset();await settle();check(readinessEnds,1,'Ready handle cleanup exactly once');
+    let handleFirstOptions, handleFirstEnds=0;
+    const handleFirst=api.createConsentGate({verified,adapter:api.createSdkAdapter({loadClient:async()=>({Conversation:{startSession(options){
+        handleFirstOptions=options;const handle={isOpen:()=>true,sendUserMessage(){},endSession(){handleFirstEnds++;}};
+        options.onConversationCreated(handle);return handle;
+    }}})})});
+    handleFirst.request();handleFirst.accept();await settle();
+    check(handleFirst.snapshot().phase,'connecting','Returned handle alone does not authorize active UI');
+    check(handleFirst.send('before connection event'),false,'Handle-first ordering cannot send early');
+    handleFirstOptions.onConnect({conversationId:'conv_connect_after_handle'});
+    check(handleFirst.snapshot().phase,'active','Late supported onConnect activates usable handle');
+    handleFirst.close();await settle();check(handleFirstEnds,1,'Handle-first cleanup exactly once');
+    for (const action of ['close','guardrail','disconnect']) {
+        let lateHandleOptions,releaseLateHandle,lateHandleEnds=0;
+        const lateGate=api.createConsentGate({verified,adapter:api.createSdkAdapter({loadClient:async()=>({Conversation:{startSession(options){
+            lateHandleOptions=options;const handle={isOpen:()=>true,sendUserMessage(){throw Error('must not send');},endSession(){lateHandleEnds++;options.onDisconnect({reason:'user'});}};
+            options.onConversationCreated(handle);options.onConnect({conversationId:'conv_pending_'+action});
+            return new Promise(resolve=>{releaseLateHandle=()=>resolve(handle);});
+        }}})})});
+        lateGate.request();lateGate.accept();await settle();
+        if(action==='close')lateGate.close();else if(action==='guardrail')lateHandleOptions.onGuardrailTriggered();else lateHandleOptions.onDisconnect({reason:'server'});
+        check(lateGate.snapshot().phase,'closing',action+' during handle wait fences replacement session');
+        check(lateGate.accept(),false,action+' cannot implicitly restart');
+        releaseLateHandle();await settle();
+        check(lateHandleEnds,1,action+' pending handle cleans exactly once');
+        check(lateGate.snapshot().phase,'closed',action+' closes only after handle cleanup');
+        check(lateGate.snapshot().conversationId,'conv_pending_'+action,action+' retains original conversation ID');
+        check(lateGate.send('after shutdown'),false,action+' cannot send discarded input');
+    }
+    let synchronousEnds=0;
+    const syncDisconnect=api.createConsentGate({verified,adapter:{startSession(request){
+        request.callbacks.onConnect({conversationId:'conv_sync_disconnect'});request.callbacks.onDisconnect();
+        return {isOpen:()=>false,sendUserMessage(){},endSession(){synchronousEnds++;}};
+    }}});
+    syncDisconnect.request();syncDisconnect.accept();check(syncDisconnect.snapshot().phase,'closing','Synchronous disconnect keeps pending-start cleanup fenced');
+    await settle();check(synchronousEnds,1,'Synchronous pending handle cleans once');check(syncDisconnect.snapshot().phase,'closed','Synchronous disconnect settles closed');
+    let unusableEnds=0;
+    const unusable=api.createConsentGate({verified,adapter:{startSession(request){request.callbacks.onConnect({conversationId:'conv_unusable'});
+        return {isOpen:()=>false,sendUserMessage(){throw Error('must not send');},endSession(){unusableEnds++;}};}}});
+    unusable.request();unusable.accept();await settle();check(unusable.snapshot().phase,'connecting','Closed SDK handle never activates composer');
+    check(unusable.send('unusable'),false,'Unusable handle cannot send');unusable.close();await settle();check(unusableEnds,1,'Unusable handle can still be cleaned');
+
+
+
+    for (const timing of ['before_handle','after_cleanup','new_attempt']) {
+        let terminalOptions,releaseTerminal,terminalEnds=0;
+        const terminal=api.createConsentGate({verified,adapter:api.createSdkAdapter({loadClient:async()=>({Conversation:{startSession(options){
+            terminalOptions=options;const handle={isOpen:()=>true,sendUserMessage(){},endSession(){terminalEnds++;}};
+            options.onConversationCreated(handle);options.onConnect({conversationId:'conv_terminal_'+timing});
+            return new Promise(resolve=>{releaseTerminal=()=>resolve(handle);});
+        }}})})});
+        terminal.request();terminal.accept();await settle();terminalOptions.onDisconnect({reason:'server'});
+        check(terminal.snapshot().phase,'closing','Natural disconnect waits for pending handle cleanup');
+        if(timing==='before_handle')terminalOptions.onGuardrailTriggered();
+        releaseTerminal();await settle();check(terminalEnds,1,'Natural disconnect plus terminal event cleans handle once');
+        if(timing==='after_cleanup')terminalOptions.onGuardrailTriggered();
+        if(timing==='new_attempt'){
+            terminal.request();terminalOptions.onGuardrailTriggered();await settle();
+            check(terminal.snapshot().phase,'awaiting','Previous terminal event does not replace new consent');
+            check(terminal.snapshot().notice,null,'Previous terminal event does not accuse newer session');
+            terminal.close();
+        }else{
+            await settle();check(terminal.snapshot().notice,'refused','Same-session late guardrail preserves fixed fallback');
+            check(terminal.snapshot().phase,'closed','Terminal fallback follows completed cleanup');
+            check(terminal.snapshot().conversationId,'conv_terminal_'+timing,'Same-session late guardrail retains early ID');
+        }
+    }
+
     // Browser timer methods require a Window receiver; Node's timers do not.
     // Exercise the real defaults, not an injected options.clock.
     let timerId=0;

@@ -1,6 +1,6 @@
 {
-  "recorded_utc": "2026-10-06T18:27:56.397141+00:00",
-  "status": "SDK-PREPARED-OFF; NATIVE-TIMER-FIX-VERIFIED",
+  "recorded_utc": "2026-10-06T19:04:35.196743+00:00",
+  "status": "SDK-PREPARED-OFF; PREVENTIVE-HANDLE-READINESS-FENCE-VERIFIED",
   "sdk": {
     "version": "1.27.0",
     "sha256": "f69a845935c3788ea46a73b09ead74640dfba5be135f225eac719df3a320c9cd",
@@ -10,17 +10,18 @@
     "website_pytest": 296,
     "website_existing_warnings": 2,
     "corporate_gov_consent": 208,
-    "corporate_gov_sdk": 146,
+    "corporate_gov_sdk": 254,
     "personal_consent": 104,
-    "personal_sdk": 73,
-    "total_offline_assertions": 531,
+    "personal_sdk": 127,
+    "total_offline_assertions": 693,
     "personal_actual_lint_errors": 0,
     "personal_existing_lint_warnings": 6,
     "personal_actual_build": "PASS",
-    "independent_review": "PASS for disabled candidates, receiver-sensitive regressions and count-only pytest update",
+    "independent_review": "PASS; staged bytes matched applied owned candidate sources and tests",
     "native_window_timer_regression": "PASS; default consent and SDK loader clocks, negative controls reproduce original Illegal invocation",
     "prior_both_diff_checks": "PASS",
-    "both_diff_checks": "Root to check after verification docs update"
+    "both_diff_checks": "Root to check after verification docs update",
+    "readiness_fence_regression": "PASS; deferred onConnect-before-handle, handle-before-onConnect, pending shutdown/late guardrail, cleanup once, no queued or automatic send"
   },
   "verified_capability_flags": {
     "preSessionControl": false,
@@ -38,14 +39,14 @@
     "SDK has no public pending-start abort; cancellation fenced and cleanup when startup settles"
   ],
   "source_hashes": {
-    "/Volumes/Xtra2/Codex-stuffs/worktrees/three-site-agents-20261006-websites/src/static/js/assistant-widget.js": "f3a9112797cae231f80f4235e2e88aa4d9dde3220de8e2180d673bc25e919682",
-    "/Volumes/Xtra2/Codex-stuffs/worktrees/three-site-agents-20261006-websites/sites/samgov/assistant-widget.js": "bff4b295a5ba39a006a482dd0f4ba1bb583097f6dd9be183478ae59d970aa039",
-    "/Volumes/Xtra2/Codex-stuffs/worktrees/three-site-agents-20261006-websites/tests/consent_gate_checks.mjs": "cf5840ebbbfde0a8f7cffe9400c9833bd8563400e5bf602d37a96d9e8911fffa",
-    "/Volumes/Xtra2/Codex-stuffs/worktrees/three-site-agents-20261006-websites/tests/sdk_session_adapter_checks.mjs": "322b13b7cb657844e77847385c97625fbfc374717f29efbeda7415f6b06ef7b7",
-    "/Volumes/Xtra2/Codex-stuffs/worktrees/three-site-agents-20261006-personal/src/assistant-widget.js": "0807aa9c5438fa7b60c8b195fe9c5a6e66e21a882ad254f8601aaf2c0300c22e",
-    "/Volumes/Xtra2/Codex-stuffs/worktrees/three-site-agents-20261006-personal/tests/consent_gate_checks.mjs": "3acef13ea1c06976866de9c10ee214b52bbacd7abb9fbceac227263738e39257",
-    "/Volumes/Xtra2/Codex-stuffs/worktrees/three-site-agents-20261006-personal/tests/sdk_session_adapter_checks.mjs": "9c9f745f46d057baf2ac5ea6e91fe327f980b1fb0aa9082d7d71888756204bdc",
-    "/Volumes/Xtra2/Codex-stuffs/worktrees/three-site-agents-20261006-websites/tests/test_assistant_widget.py": "a4ca69a8e20a1881c7f3d400d9c73e09979af88312e1fbc4c564b9c8d1ea325f"
+    "/Volumes/Xtra2/Codex-stuffs/worktrees/three-site-agents-20261006-websites/src/static/js/assistant-widget.js": "cc6cb6c88a11c94ebbd9763affa93128fd18234e95b48f3154b24076cda2936e",
+    "/Volumes/Xtra2/Codex-stuffs/worktrees/three-site-agents-20261006-websites/sites/samgov/assistant-widget.js": "e52d787968871c0f81e6601f62a19b74fb9bd610ef90f7402c070b5dacae98ff",
+    "/Volumes/Xtra2/Codex-stuffs/worktrees/three-site-agents-20261006-websites/tests/consent_gate_checks.mjs": "007849daa80351ae5fb6d932a066119581377f762603740590d1dd98a8dd7e0d",
+    "/Volumes/Xtra2/Codex-stuffs/worktrees/three-site-agents-20261006-websites/tests/sdk_session_adapter_checks.mjs": "9a2288e3ba0c8790b1f369e287a6b688989b3feae235b87fadc895568f2c19e2",
+    "/Volumes/Xtra2/Codex-stuffs/worktrees/three-site-agents-20261006-personal/src/assistant-widget.js": "127d655ca9e5aebc3ee0d2eabb3e782f6180c2c5d35e8cbca2bc648737cdea35",
+    "/Volumes/Xtra2/Codex-stuffs/worktrees/three-site-agents-20261006-personal/tests/consent_gate_checks.mjs": "cf9e9a05a77775465e946d029cd4d450a1a1ec0cb0d962ced0cd0d247b6a6115",
+    "/Volumes/Xtra2/Codex-stuffs/worktrees/three-site-agents-20261006-personal/tests/sdk_session_adapter_checks.mjs": "6893742f930f712e409ade52b3e40ae788fcc1534432b51b38f6a1f690999ad9",
+    "/Volumes/Xtra2/Codex-stuffs/worktrees/three-site-agents-20261006-websites/tests/test_assistant_widget.py": "3b8f90c6850c098fbf0708cde2e4ed7e99aadb056ccedd5efd1cc4aeb43d6981"
   },
   "worker_provider_conversations": 0,
   "worker_actual_browser_sessions": 0,
@@ -63,8 +64,21 @@
     "scope": "separate localhost private harness only; no public capture/delivery/voice/retention proof"
   },
   "separate_private_offline_checks": {
-    "lifecycle_ui_assertions": 339,
+    "lifecycle_ui_assertions": 532,
     "handler_assertions": 53,
-    "result": "PASS; fake SDK/clock/DOM and offline handler, no provider/browser/server startup by worker"
+    "result": "PASS; staged private v2, fake SDK/clock/DOM and offline handler; no worker provider/browser calls"
+  },
+  "preventive_handle_readiness": {
+    "label": "preventive only; actual browser message loss not demonstrated",
+    "active_prerequisites": [
+      "supported onConnect",
+      "SDK handle isOpen true",
+      "text send control available"
+    ],
+    "text_queue": false,
+    "automatic_send": false,
+    "early_conversation_id_preserved": true,
+    "late_guardrail_generic_fallback_preserved": true,
+    "active_private_harness": "worker left served core untouched; root owns swap after completed call/closed browser"
   }
 }

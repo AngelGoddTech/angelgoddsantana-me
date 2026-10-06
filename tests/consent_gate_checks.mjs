@@ -43,7 +43,7 @@ for (const path of PATHS) {
     const fakeClock = clock();
     const receipts = [];
     const gate = api.createConsentGate({verified, clock: fakeClock,
-        adapter: {startSession(options) { calls += 1; callback = options.callbacks; receipts.push(options); return {endSession() { disconnects += 1; }}; }},
+        adapter: {startSession(options) { calls += 1; callback = options.callbacks; receipts.push(options); return {isOpen: () => true, sendUserMessage() {}, endSession() { disconnects += 1; }}; }},
         onReviewNeeded: receipt => receipts.push(receipt)});
     const before = calls;
     check(gate.request(), true, 'Text request');
@@ -185,7 +185,7 @@ for (const path of PATHS) {
     }
     const badGate = api.createConsentGate({verified, clock: clock(), adapter: {startSession() { throw Error('invented failure'); }}});
     badGate.request();
-    check(badGate.accept(), false, 'Synchronous failure safe');
+    check(badGate.accept(), false, 'Synchronous failure safe'); await settle();
     check(badGate.snapshot().phase, 'unavailable', 'Failure cannot retry automatically');
 }
 console.log(JSON.stringify({assertions, result: 'PASS', provider_sessions: 0, microphone_requests: 0}));
