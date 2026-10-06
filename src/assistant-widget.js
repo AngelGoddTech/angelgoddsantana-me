@@ -125,7 +125,7 @@
         return result;
     }
 
-    function createSdkLoader(page, scope, clock = {set: setTimeout, clear: clearTimeout}) {
+    function createSdkLoader(page, scope, clock = {set: (fn, ms) => globalThis.setTimeout(fn, ms), clear: id => globalThis.clearTimeout(id)}) {
         let pending = null;
         return () => {
             if (pending) return pending;
@@ -193,7 +193,7 @@
     function createConsentGate(options = {}) {
         const verified = {...VERIFIED, ...options.verified};
         const adapter = options.adapter;
-        const clock = options.clock || {now: () => Date.now(), set: setTimeout, clear: clearTimeout};
+        const clock = options.clock || {now: () => Date.now(), set: (fn, ms) => globalThis.setTimeout(fn, ms), clear: id => globalThis.clearTimeout(id)};
         const timeout = CONSENT_TIMEOUT_MS;
         let generation = 0;
         let timer = null;

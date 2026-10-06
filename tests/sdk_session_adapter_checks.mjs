@@ -133,5 +133,38 @@ for (const path of PATHS) {
     const blocked = api.createConsentGate({adapter});
     blocked.request(); blocked.accept(); await settle();
     check(starts, beforeDenied, 'Production capture/runtime gates remain false despite available adapter');
+
+    // Browser timer methods require a Window receiver; Node's timers do not.
+    // Exercise the real defaults, not an injected options.clock.
+    let timerId=0;
+    const nativeTimers=new Map();
+    const timerBridge={set(fn,ms){const id=++timerId;nativeTimers.set(id,{fn,ms});return id;},clear:id=>nativeTimers.delete(id)};
+    const windowContext=vm.createContext({timerBridge});
+    vm.runInContext(`globalThis.setTimeout=function(fn,ms){if(this!==globalThis)throw new TypeError('Illegal invocation: Window receiver');return timerBridge.set(fn,ms);};
+        globalThis.clearTimeout=function(id){if(this!==globalThis)throw new TypeError('Illegal invocation: Window receiver');timerBridge.clear(id);};`,windowContext);
+    vm.runInContext(source,windowContext);
+    const windowApi=windowContext.GoddTechAssistantConsent;
+    let windowStarts=0;
+    const windowGate=windowApi.createConsentGate({verified,adapter:{startSession(){windowStarts++;return {endSession(){}};}}});
+    check(windowGate.request(),true,'Native-receiver default consent timer');
+    check([...nativeTimers.values()][0].ms,30000,'Actual default 30-second timeout');
+    [...nativeTimers.values()][0].fn();
+    check(windowGate.snapshot().notice,'timeout','Native-receiver default timer ends unagreed attempt');
+    check(windowStarts,0,'Native-receiver timeout never connects');
+    windowGate.request();windowGate.close();check(nativeTimers.size,0,'Default consent clearTimeout has Window receiver');
+    const windowScripts=[],windowScope={};
+    const windowLoad=windowApi.createSdkLoader({createElement:()=>({}),head:{appendChild:n=>windowScripts.push(n)}},windowScope);
+    const windowLoaded=windowLoad();check([...nativeTimers.values()][0].ms,15000,'Default SDK load timeout has Window receiver');
+    windowScope.ElevenLabsClient={Conversation:{startSession(){}}};windowScripts[0].onload();await windowLoaded;
+    check(nativeTimers.size,0,'Default SDK success clears timer with Window receiver');
+    const defaultTimeout=windowApi.createSdkLoader({createElement:()=>({}),head:{appendChild(){}}},{})();
+    [...nativeTimers.values()][0].fn();await assert.rejects(defaultTimeout,/SDK is unavailable/);assertions++;
+    check(nativeTimers.size,0,'Default SDK timeout clears correctly');
+    // Negative control proves that the regression fails against the original defaults.
+    vm.runInContext(source.replaceAll('set: (fn, ms) => globalThis.setTimeout(fn, ms), clear: id => globalThis.clearTimeout(id)',
+        'set: setTimeout, clear: clearTimeout'),windowContext);
+    const brokenApi=windowContext.GoddTechAssistantConsent;
+    assert.throws(()=>brokenApi.createConsentGate({verified,adapter:{startSession(){throw new Error('must not start');}}}).request(),/Illegal invocation/);assertions++;
+    await assert.rejects(brokenApi.createSdkLoader({createElement:()=>({}),head:{appendChild(){}}},{})(),/Illegal invocation/);assertions++;
 }
 console.log(JSON.stringify({assertions, result: 'PASS', real_provider_sessions: 0, microphone_requests: 0}));
