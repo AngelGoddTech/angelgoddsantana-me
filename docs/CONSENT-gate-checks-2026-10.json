@@ -1,0 +1,49 @@
+{
+  "recorded_utc": "2026-10-06T17:45:23.989874+00:00",
+  "status": "SDK-PREPARED-OFF",
+  "sdk": {
+    "version": "1.27.0",
+    "sha256": "f69a845935c3788ea46a73b09ead74640dfba5be135f225eac719df3a320c9cd",
+    "sri": "sha384-ekuWfdL0BkeVAWv24yeCWtzVwYDQd4pCkPL5TKVDLmwDBeVxS2cTwo0wfsUNaFkJ"
+  },
+  "actual_applied_checks": {
+    "website_pytest": 296,
+    "website_existing_warnings": 2,
+    "corporate_gov_consent": 208,
+    "corporate_gov_sdk": 124,
+    "personal_consent": 104,
+    "personal_sdk": 62,
+    "total_offline_assertions": 498,
+    "personal_actual_lint_errors": 0,
+    "personal_existing_lint_warnings": 6,
+    "personal_actual_build": "PASS",
+    "both_diff_checks": "PASS",
+    "independent_review": "PASS for disabled preparation"
+  },
+  "verified_capability_flags": {
+    "preSessionControl": false,
+    "textCapture": false,
+    "voiceRecording": false,
+    "guardrailEvents": false,
+    "disconnectControl": false
+  },
+  "capture_flags": "OFF",
+  "provider_conversations": 0,
+  "microphone_requests": 0,
+  "actual_browser_sessions": 0,
+  "consent_timeout_ms": 30000,
+  "activation_limits": [
+    "actual transcript/voice capture and browser lifecycle unverified",
+    "durable server review acknowledgement unverified",
+    "SDK has no public pending-start abort; cancellation fenced and cleanup when startup settles"
+  ],
+  "source_hashes": {
+    "/Volumes/Xtra2/Codex-stuffs/worktrees/three-site-agents-20261006-websites/src/static/js/assistant-widget.js": "9e746eb6e0779eeabb88aada0f5b9d611f9409cf38a9524bba3af433b689ef5f",
+    "/Volumes/Xtra2/Codex-stuffs/worktrees/three-site-agents-20261006-websites/sites/samgov/assistant-widget.js": "6297814a479840e761b8fee8eb4ea0c29836a75b12038a8a0a76531306e44825",
+    "/Volumes/Xtra2/Codex-stuffs/worktrees/three-site-agents-20261006-websites/tests/consent_gate_checks.mjs": "cf5840ebbbfde0a8f7cffe9400c9833bd8563400e5bf602d37a96d9e8911fffa",
+    "/Volumes/Xtra2/Codex-stuffs/worktrees/three-site-agents-20261006-websites/tests/sdk_session_adapter_checks.mjs": "35e1d8853b5b688b3789db646d441b980d9467c62201d4ad3762764c79fd124d",
+    "/Volumes/Xtra2/Codex-stuffs/worktrees/three-site-agents-20261006-personal/src/assistant-widget.js": "2e13bb576b3d6f787b223db74950850a08971431b6a5528b8b4c6e63104514d3",
+    "/Volumes/Xtra2/Codex-stuffs/worktrees/three-site-agents-20261006-personal/tests/consent_gate_checks.mjs": "3acef13ea1c06976866de9c10ee214b52bbacd7abb9fbceac227263738e39257",
+    "/Volumes/Xtra2/Codex-stuffs/worktrees/three-site-agents-20261006-personal/tests/sdk_session_adapter_checks.mjs": "6a9e39c07e642a06c5d4105e504842f90f5f2d23b377abb464bbf588de8eeb9a"
+  }
+}
