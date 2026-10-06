@@ -110,6 +110,7 @@ function Footer() {
           <a href={EMAIL_URL}><Mail size={16} /> Email</a>
           <a href={LINKEDIN_URL} target="_blank" rel="noreferrer"><Linkedin size={16} /> LinkedIn</a>
           <Link to="/selected-work"><ShieldCheck size={16} /> Selected work</Link>
+          <Link to="/privacy">Privacy</Link>
         </div>
         <p className="copyright">© {new Date().getFullYear()} Angel Godd-Santana. U.S. remote.</p>
       </div>
@@ -515,6 +516,17 @@ function ContactPage() {
   );
 }
 
+function PrivacyPage() {
+  return (
+    <section className="section">
+      <div className="shell">
+        <h1>AI assistant</h1>
+        <p>This site offers an AI assistant. Conversations with it, typed or spoken, are recorded and transcribed so that we can reply to you. In voice mode the assistant speaks with an AI-generated voice modelled on Angel Godd-Santana; you are talking to software, not to a person. I use what you share only to respond to your inquiry. It is stored in Godd Technologies' Microsoft Azure environment and in my ElevenLabs and Notion accounts, kept for 90 days unless a business relationship follows, and never sold. To ask for deletion, email support@goddtechnologies.com. Full notice: <a href="https://calldesk.agreeablemoss-8b616ba9.eastus2.azurecontainerapps.io/privacy">https://calldesk.agreeablemoss-8b616ba9.eastus2.azurecontainerapps.io/privacy</a></p>
+      </div>
+    </section>
+  );
+}
+
 function NotFoundPage() {
   return (
     <section className="not-found">
@@ -537,6 +549,7 @@ function App() {
             <Route path="/resume" element={<ResumePage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
