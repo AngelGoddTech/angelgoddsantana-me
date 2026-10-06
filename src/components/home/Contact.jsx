@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion as Motion } from 'framer-motion';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
@@ -10,7 +10,7 @@ const Contact = () => {
     <section id="contact" className="py-20 bg-gray-900/20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-2 gap-12 items-center">
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, amount: 0.5 }}
@@ -30,9 +30,9 @@ const Contact = () => {
               <a href="#" className="text-gray-400 hover:text-white"><Github size={24} /></a>
               <a href="#" className="text-gray-400 hover:text-white"><Mail size={24} /></a>
             </div>
-          </motion.div>
+          </Motion.div>
 
-          <motion.form
+          <Motion.form
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, amount: 0.5 }}
@@ -54,7 +54,7 @@ const Contact = () => {
             <Button type="submit" className="w-full bg-cyan-500 hover:bg-cyan-600 text-black">
               Send Message
             </Button>
-          </motion.form>
+          </Motion.form>
         </div>
       </div>
     </section>

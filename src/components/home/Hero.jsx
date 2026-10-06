@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { motion } from 'framer-motion';
+import { motion as Motion } from 'framer-motion';
 
 const CubeScene = lazy(() => import('../CubeScene.jsx'));
 
@@ -8,7 +8,7 @@ const Hero = () => {
     <section id="home" className="relative grid-bg" style={{ minHeight: '100vh' }}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-full">
         <div className="grid md:grid-cols-2 gap-8 items-center h-full pt-20">
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
@@ -23,9 +23,9 @@ const Hero = () => {
             <p className="mt-4 text-lg text-gray-300 max-w-lg mx-auto md:mx-0">
               Specializing in AI Stock Video Licensing, Voice, and Advanced Cloud Solutions
             </p>
-          </motion.div>
+          </Motion.div>
 
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -36,7 +36,7 @@ const Hero = () => {
                 <CubeScene />
               </Suspense>
             </div>
-          </motion.div>
+          </Motion.div>
         </div>
       </div>
     </section>
