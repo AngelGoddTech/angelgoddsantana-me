@@ -15,7 +15,7 @@
   "links": [
     { "href": "/privacy", "label": "Privacy and provider disclosures" },
     { "href": "/terms", "label": "Assistant terms" },
-    { "href": "/ai-retention-policy/azure-copy-amendment", "label": "Full Azure-copy retention policy" }
+    { "href": "/ai-retention-policy/azure-copy-amendment", "label": "Privacy & recording policy" }
   ],
   "agreement": {
     "text": "I agree to processing my text conversation and preserving its transcript in the Company Azure copy under these disclosures.",

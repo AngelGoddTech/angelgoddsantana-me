@@ -108,7 +108,7 @@ export default function AssistantPage() {
         <p>{notice.retention}</p>
         <p>{notice.copies}</p>
         <p>{notice.restrictions}</p>
-        <p>{notice.links.map((link, index) => <span key={link.href}>{index ? ' · ' : ''}<a href={link.href}>{link.label}</a></span>)}</p>
+        <p>{notice.links.map((link, index) => <span key={link.href}>{index ? ' · ' : ''}<a href={link.href} target="_blank" rel="noopener noreferrer" aria-label={`${link.label} (opens in a new tab)`}>{link.label}</a></span>)}</p>
         <label className="assistant-consent">
           <input type="checkbox" disabled={!ready || ['connecting','active','closing'].includes(phase)} checked={agreed} onChange={event => setAgreed(event.target.checked)} />
           {notice.agreement[mode]}

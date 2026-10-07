@@ -16,7 +16,7 @@ async function fixture(closeFails=false) {
   const deferred=new Promise(resolve=>{release=resolve;});
   globalThis.__OFFLINE_ASSISTANT_BRIDGE={clear(){},prepare:async()=>{prepareCount++;},
     authorizeConsent:async()=>({authorization:'A'.repeat(43)}),
-    startAuthorizedSession:async()=>{starts++;await deferred;return {isOpen:()=>!ended,endSession:async()=>{
+    startAuthorizedSession:async(options)=>{starts++;await deferred;options.callbacks?.onConnect({conversationId:'conv_offline_policy_link'});return {isOpen:()=>!ended,endSession:async()=>{
       if(!ended){ended=true;ends++;}if(closeFails)throw Error('offline failed disconnect');
     }}}};
   const slots=[],effects=[];let cursor=0;
@@ -69,4 +69,29 @@ test('A failed disconnect latches unavailable through mode changes',async()=>{
   const f=await fixture(true);await f.begin();const closed=f.end();f.release();await closed;await f.settle();
   f.find(node=>node.type==='input'&&node.props.type==='radio'&&node.props.value==='voice').props.onChange();f.render();await f.settle();
   assert.equal(f.start().props.disabled,true);assert.equal(f.agree().props.disabled,true);assert.equal(f.stats().starts,1);
+});
+
+test('The public policy remains available before agreement and during either active mode',async()=>{
+  for (const mode of ['text','voice']) {
+    const f=await fixture();
+    if(mode==='voice') {
+      f.find(node=>node.type==='input'&&node.props.type==='radio'&&node.props.value==='voice').props.onChange();
+      f.render();
+      await f.settle();
+    }
+    const policy=()=>f.find(node=>node.type==='a'&&node.props.href==='/ai-retention-policy/azure-copy-amendment');
+    for(const active of [false,true]) {
+      if(active) {await f.begin();f.release();await f.settle();}
+      const link=policy();
+      assert.equal(link.props.children,'Privacy & recording policy');
+      assert.equal(link.props.target,'_blank');
+      assert.equal(link.props.rel,'noopener noreferrer');
+      assert.equal(link.props['aria-label'],'Privacy & recording policy (opens in a new tab)');
+      assert.equal(link.props.onClick,undefined);
+      const before=f.stats();f.render();
+      assert.deepEqual(f.stats(),before);
+      assert.equal(f.stats().ends,0);
+      if(active) assert.equal(f.agree().props.checked,true);
+    }
+  }
 });
