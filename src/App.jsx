@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import './App.css';
 import SelectedWork from './components/SelectedWork';
-import PrivacyPage, { AssistantTermsPage, RetentionPolicyPage } from './components/Privacy';
+import PrivacyPage, { AssistantTermsPage, RetentionPolicyPage, AzureCopyAmendmentPage } from './components/Privacy';
 import AssistantPage from './components/Assistant';
 
 const RESUME_PDF = '/documents/Angel_Godd_Santana_Principal_Cloud_AI_Architect_Resume.pdf';
@@ -545,6 +545,7 @@ function App() {
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/terms" element={<AssistantTermsPage />} />
             <Route path="/ai-retention-policy" element={<RetentionPolicyPage />} />
+            <Route path="/ai-retention-policy/azure-copy-amendment" element={<AzureCopyAmendmentPage />} />
             <Route path="/assistant" element={<AssistantPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>

@@ -1,13 +1,15 @@
 import { Link } from 'react-router-dom';
 import notice from '../policy/assistant-notice.json';
 import policyMarkdown from '../policy/ai-assistant-retention-policy.md?raw';
+import amendmentMarkdown from '../policy/ai-assistant-azure-copy-amendment.md?raw';
 
 function LegalLinks() {
   return (
     <p>
       <Link to="/privacy">Assistant privacy</Link>{' · '}
       <Link to="/terms">Assistant terms</Link>{' · '}
-      <Link to="/ai-retention-policy">Full adopted retention policy</Link>{' · '}
+      <Link to="/ai-retention-policy">Adopted retention policy</Link>{' · '}
+      <Link to="/ai-retention-policy/azure-copy-amendment">Full Azure-copy retention policy</Link>{' · '}
       <Link to="/assistant">Review the conversation notice</Link>
     </p>
   );
@@ -29,6 +31,7 @@ export default function PrivacyPage() {
         <h2>Retention and Keep</h2>
         <p>{notice.retention}</p>
         <p>{notice.copies}</p>
+        <p>A business relationship does not create Keep automatically. An overdue review leaves Keep in force pending an Owner decision. ElevenLabs retention follows its separate provider controls; the precise removal timing has not been verified. Provider expiry, provider deletion and Company Azure deletion are separate events.</p>
         <p>Archive and Restore change inbox placement. They do not delete content or create, extend or end Keep. Missing evidence blocks disposition for reconciliation; it does not create an indefinite-retention policy.</p>
         <h2>Information boundaries and requests</h2>
         <p>{notice.restrictions}</p>
@@ -46,7 +49,8 @@ export function AssistantTermsPage() {
     <section className="section">
       <div className="shell narrow-copy legal-copy">
         <h1>AI assistant terms</h1>
-        <p>These terms cover only the Company-operated AI assistant on this professional site. The assistant is currently unavailable.</p>
+        <p>These terms cover only the Company-operated AI assistant on this professional site.</p>
+        <p role="status">The assistant is currently unavailable.</p>
         <p>This assistant is for ordinary professional inquiries. Starting a conversation does not purchase a service, accept an order, book work or a meeting, confirm employment availability, quote rates or create an engagement. Any actual engagement requires separate human agreement.</p>
         <p>{notice.restrictions}</p>
         <p>Before each connection, review the actual privacy, provider and retention disclosures and expressly agree to the selected conversation mode. Text agreement does not authorize voice recording or microphone access. A changed mode, language or material notice requires renewed agreement.</p>
@@ -64,10 +68,26 @@ export function RetentionPolicyPage() {
     <section className="section">
       <div className="shell narrow-copy legal-copy">
         <h1>Website AI assistant retention policy</h1>
-        <p>The Company Owner adopted this policy effective October 7, 2026. Policy adoption is separate from verified operating readiness; the assistant remains unavailable.</p>
-        <p>The Azure-copy amendment in the prospective assistant notice is proposed and takes effect only after separate Owner adoption and verified release. The original adopted policy below remains preserved.</p>
+        <p role="status">The assistant is currently unavailable.</p>
+        <p>The Company Owner adopted the original policy below effective October 7, 2026. It remains preserved alongside the <Link to="/ai-retention-policy/azure-copy-amendment">Azure-copy amendment</Link>.</p>
         <p>The policy supplements the <a href="https://goddtechnologies.com/privacy">Company Privacy Policy</a> and <a href="https://goddtechnologies.com/terms">Terms of Use and Service</a> for this specific workflow.</p>
         <pre className="policy-document" aria-label="Full adopted policy text">{policyMarkdown}</pre>
+        <LegalLinks />
+      </div>
+    </section>
+  );
+}
+
+export function AzureCopyAmendmentPage() {
+  return (
+    <section className="section">
+      <div className="shell narrow-copy legal-copy">
+        <h1>Azure-copy retention policy</h1>
+        <p role="status">Awaiting Owner approval. The assistant is currently unavailable.</p>
+        <article aria-label="Azure-copy retention amendment">
+          <pre className="policy-document" aria-label="Full Azure-copy amendment text">{amendmentMarkdown}</pre>
+        </article>
+        <p>Read this amendment with the <Link to="/ai-retention-policy">original adopted retention policy</Link>, <a href="https://goddtechnologies.com/privacy">Company Privacy Policy</a> and <a href="https://goddtechnologies.com/terms">Terms of Use and Service</a>.</p>
         <LegalLinks />
       </div>
     </section>

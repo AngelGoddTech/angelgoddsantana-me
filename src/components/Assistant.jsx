@@ -108,12 +108,12 @@ export default function AssistantPage() {
         <p>{notice.retention}</p>
         <p>{notice.copies}</p>
         <p>{notice.restrictions}</p>
-        <p><a href="/privacy">Privacy and provider disclosures</a>{' · '}<a href="/terms">Assistant terms</a>{' · '}<a href="/ai-retention-policy">Full adopted policy</a></p>
+        <p>{notice.links.map((link, index) => <span key={link.href}>{index ? ' · ' : ''}<a href={link.href}>{link.label}</a></span>)}</p>
         <label className="assistant-consent">
           <input type="checkbox" disabled={!ready || ['connecting','active','closing'].includes(phase)} checked={agreed} onChange={event => setAgreed(event.target.checked)} />
-          I agree to processing and preserving this {mode} conversation in the Company Azure copy under these disclosures.
+          {notice.agreement[mode]}
         </label>
-        <p>Agreement and connection stay disabled while the assistant is unavailable. Changing mode or a material notice will require new agreement before a future connection.</p>
+        <p>{notice.renewal}</p>
         <button className="button button-primary" type="button" disabled={!ready || !agreed || ['connecting','active','closing'].includes(phase)} onClick={start}>Start {mode} conversation{ready ? '' : ' — unavailable'}</button>
         {['connecting','active'].includes(phase) && <button className="button" type="button" onClick={end}>End conversation</button>}
         {phase === 'active' && <ol aria-label="Conversation transcript" aria-live="polite">{messages.map((value,index) => <li key={index}>{value.role === 'user' ? 'You' : 'Assistant'}: {value.message}</li>)}</ol>}
@@ -121,7 +121,7 @@ export default function AssistantPage() {
           <label>Your message<textarea value={message} maxLength={2000} onChange={event => setMessage(event.target.value)} /></label><button type="submit">Send</button>
         </form>}
         <p>{notice.alternative}</p>
-        <span className="sr-only">{ready ? 'Server confirmed current assistant readiness.' : 'No verified assistant readiness.'}</span>
+        <span className="sr-only">{ready ? 'The assistant is ready for your agreement.' : 'The assistant is unavailable.'}</span>
       </div>
     </section>
   );
