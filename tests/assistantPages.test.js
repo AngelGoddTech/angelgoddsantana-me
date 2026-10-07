@@ -82,6 +82,6 @@ test('legal documents and unavailable assistant render without a provider connec
     assert.match(notice.providers, /OpenAI Luna.*Google Gemini fallback/);
     for (const link of notice.links) {
       assert.ok(assistantPage.includes(`href="${link.href}"`));
-      assert.ok(assistantPage.includes(link.label));
+      assert.ok(assistantPage.includes(link.label.replaceAll('&', '&amp;')));
     }
 });

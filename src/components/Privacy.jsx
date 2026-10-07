@@ -83,7 +83,7 @@ export function AzureCopyAmendmentPage() {
     <section className="section">
       <div className="shell narrow-copy legal-copy">
         <h1>Azure-copy retention policy</h1>
-        <p role="status">Awaiting Owner approval. The assistant is currently unavailable.</p>
+        <p role="status">Owner adopted October 7, 2026. The assistant is currently unavailable.</p>
         <article aria-label="Azure-copy retention amendment">
           <pre className="policy-document" aria-label="Full Azure-copy amendment text">{amendmentMarkdown}</pre>
         </article>
