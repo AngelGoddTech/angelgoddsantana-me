@@ -114,7 +114,7 @@ function Footer() {
           <Link to="/selected-work"><ShieldCheck size={16} /> Selected work</Link>
           <Link to="/privacy">Assistant privacy</Link>
           <Link to="/terms">Assistant terms</Link>
-          <Link to="/assistant">AI assistant</Link>
+          <a href="/assistant">AI assistant</a>
         </div>
         <p className="copyright">© {new Date().getFullYear()} Angel Godd-Santana. U.S. remote.</p>
       </div>
