@@ -19,6 +19,8 @@ import {
 } from 'lucide-react';
 import './App.css';
 import SelectedWork from './components/SelectedWork';
+import PrivacyPage, { AssistantTermsPage, RetentionPolicyPage } from './components/Privacy';
+import AssistantPage from './components/Assistant';
 
 const RESUME_PDF = '/documents/Angel_Godd_Santana_Principal_Cloud_AI_Architect_Resume.pdf';
 const RESUME_DOCX = '/documents/Angel_Godd_Santana_Principal_Cloud_AI_Architect_Resume.docx';
@@ -110,6 +112,9 @@ function Footer() {
           <a href={EMAIL_URL}><Mail size={16} /> Email</a>
           <a href={LINKEDIN_URL} target="_blank" rel="noreferrer"><Linkedin size={16} /> LinkedIn</a>
           <Link to="/selected-work"><ShieldCheck size={16} /> Selected work</Link>
+          <Link to="/privacy">Assistant privacy</Link>
+          <Link to="/terms">Assistant terms</Link>
+          <Link to="/assistant">AI assistant</Link>
         </div>
         <p className="copyright">© {new Date().getFullYear()} Angel Godd-Santana. U.S. remote.</p>
       </div>
@@ -537,6 +542,10 @@ function App() {
             <Route path="/resume" element={<ResumePage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<AssistantTermsPage />} />
+            <Route path="/ai-retention-policy" element={<RetentionPolicyPage />} />
+            <Route path="/assistant" element={<AssistantPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
