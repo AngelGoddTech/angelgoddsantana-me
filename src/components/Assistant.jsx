@@ -111,7 +111,7 @@ export default function AssistantPage() {
         <p><a href="/privacy">Privacy and provider disclosures</a>{' · '}<a href="/terms">Assistant terms</a>{' · '}<a href="/ai-retention-policy">Full adopted policy</a></p>
         <label className="assistant-consent">
           <input type="checkbox" disabled={!ready || ['connecting','active','closing'].includes(phase)} checked={agreed} onChange={event => setAgreed(event.target.checked)} />
-          I agree to start a {mode} conversation under these disclosures.
+          I agree to processing and preserving this {mode} conversation in the Company Azure copy under these disclosures.
         </label>
         <p>Agreement and connection stay disabled while the assistant is unavailable. Changing mode or a material notice will require new agreement before a future connection.</p>
         <button className="button button-primary" type="button" disabled={!ready || !agreed || ['connecting','active','closing'].includes(phase)} onClick={start}>Start {mode} conversation{ready ? '' : ' — unavailable'}</button>

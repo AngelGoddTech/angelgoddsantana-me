@@ -65,6 +65,7 @@ export function RetentionPolicyPage() {
       <div className="shell narrow-copy legal-copy">
         <h1>Website AI assistant retention policy</h1>
         <p>The Company Owner adopted this policy effective October 7, 2026. Policy adoption is separate from verified operating readiness; the assistant remains unavailable.</p>
+        <p>The Azure-copy amendment in the prospective assistant notice is proposed and takes effect only after separate Owner adoption and verified release. The original adopted policy below remains preserved.</p>
         <p>The policy supplements the <a href="https://goddtechnologies.com/privacy">Company Privacy Policy</a> and <a href="https://goddtechnologies.com/terms">Terms of Use and Service</a> for this specific workflow.</p>
         <pre className="policy-document" aria-label="Full adopted policy text">{policyMarkdown}</pre>
         <LegalLinks />

@@ -2,10 +2,12 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createRequire } from 'node:module';
 import { readFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { StaticRouter } from 'react-router-dom';
+import { NOTICE_SHA256 } from '../src/policy/notice-hash.js';
 
 const require = createRequire(import.meta.url);
 const { build } = createRequire(require.resolve('vite'))('esbuild');
@@ -43,6 +45,10 @@ test('legal documents and unavailable assistant render without a provider connec
     assert.match(privacy, /verified actual conversation start plus 90 elapsed days/);
     assert.match(privacy, /business relationship does not create Keep automatically/);
     assert.match(privacy, /Notion Trash is recoverable/);
+    assert.match(privacy, /Azure-copy amendment described here is proposed/);
+    assert.match(privacy, /precise removal timing has not been verified/);
+    assert.match(privacy, /An overdue review leaves Keep in force/);
+    assert.match(privacy, /authenticated Company Owner/);
     assert.match(terms, /does not purchase a service/);
     assert.match(terms, /confirm employment availability/);
     assert.match(policy, /GT-AI-RETENTION-2026-10-07-v1/);
@@ -55,4 +61,11 @@ test('legal documents and unavailable assistant render without a provider connec
     assert.match(assistantPage, /<button[^>]+disabled=""/);
     assert.match(assistantPage, /Text mode does not request microphone access/);
     assert.match(assistantPage, /currently unavailable/);
+    assert.match(assistantPage, /I agree to processing and preserving this text conversation in the Company Azure copy/);
+    assert.match(policy, /original adopted policy below remains preserved/);
+    const noticeBytes = await readFile('src/policy/assistant-notice.json');
+    assert.equal(createHash('sha256').update(noticeBytes).digest('hex'), NOTICE_SHA256);
+    const notice = JSON.parse(noticeBytes);
+    assert.equal(notice.policyVersion, 'GT-AI-RETENTION-2026-10-07-v1.1-azure-copy');
+    assert.equal(notice.noticeVersion, 'GT-WEB-CONSENT-2026-10-07-v1.1-azure-copy');
 });

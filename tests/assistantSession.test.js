@@ -11,8 +11,8 @@ for (const [path, source] of targets) {
   vm.runInContext(fs.readFileSync(new URL(path, import.meta.url),'utf8').split('\nexport const createServerSdkBridge')[0], context);
   const create = context.GoddTechAssistantSession.createServerSdkBridge;
   const now = Date.parse('2026-10-07T20:00:00Z');
-  const fields = mode => ({source,mode,language:'en',policyVersion:'GT-AI-RETENTION-2026-10-07-v1',
-    noticeVersion:'GT-WEB-CONSENT-2026-10-07-v1',noticeSha256:'f'.repeat(64)});
+  const fields = mode => ({source,mode,language:'en',policyVersion:'GT-AI-RETENTION-2026-10-07-v1.1-azure-copy',
+    noticeVersion:'GT-WEB-CONSENT-2026-10-07-v1.1-azure-copy',noticeSha256:'f'.repeat(64)});
   function fixture(change={}) {
     const requests=[]; let loads=0, starts=0, ends=0, microphone=0, sent=[], sdkOptions;
     const fetchImpl = async (url, options) => {

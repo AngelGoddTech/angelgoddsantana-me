@@ -49,6 +49,8 @@ class AssistantGateTests(unittest.TestCase):
     def test_client_claims_cannot_manufacture_authority(self):
         for field, value in (('source', 'web-corporate'), ('mode', 'audio'),
                              ('language', 'es'), ('policyVersion', 'old'),
+                             ('policyVersion', 'GT-AI-RETENTION-2026-10-07-v1'),
+                             ('noticeVersion', 'GT-WEB-CONSENT-2026-10-07-v1'),
                              ('noticeVersion', 'old'), ('noticeSha256', '0' * 64)):
             with self.subTest(field=field):
                 self.assertEqual(self.post({**self.payload, field: value}).status_code, 409)
