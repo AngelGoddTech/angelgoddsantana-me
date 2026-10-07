@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion as Motion } from 'framer-motion';
 
 const portfolioItems = [
   {
@@ -18,7 +18,7 @@ const Portfolio = () => {
   return (
     <section id="portfolio" className="py-20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.h2
+        <Motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.5 }}
@@ -26,10 +26,10 @@ const Portfolio = () => {
           className="text-xl font-semibold text-cyan-400 uppercase tracking-widest mb-12"
         >
           Portfolio
-        </motion.h2>
+        </Motion.h2>
         <div className="grid md:grid-cols-2 gap-8">
           {portfolioItems.map((item, index) => (
-            <motion.div
+            <Motion.div
               key={item.title}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -42,7 +42,7 @@ const Portfolio = () => {
                 <h3 className="text-lg font-bold text-white mb-2">{item.title}</h3>
                 <p className="text-gray-400 text-sm">{item.description}</p>
               </div>
-            </motion.div>
+            </Motion.div>
           ))}
         </div>
       </div>

@@ -1,0 +1,1 @@
+export const NOTICE_SHA256 = 'ac934ffad0f4a057b51c2ddc201706de9ff4bbcd9c43575b95503bdc9c901f7e';

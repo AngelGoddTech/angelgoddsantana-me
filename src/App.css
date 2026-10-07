@@ -315,3 +315,11 @@ p { color: var(--ink-soft); line-height: 1.7; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
 }
+.legal-copy { max-width: 900px; }
+.legal-copy h2 { margin-top: 32px; }
+.legal-copy p { line-height: 1.7; }
+.policy-document { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; line-height: 1.7; }
+.assistant-mode-picker { margin: 24px 0; padding: 16px; border: 1px solid var(--line); }
+.assistant-mode-picker label { margin-right: 24px; }
+.assistant-mode-picker input, .assistant-consent input { margin-right: 8px; }
+.assistant-consent { display: block; }
