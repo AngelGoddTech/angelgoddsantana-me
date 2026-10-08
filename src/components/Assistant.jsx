@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import notice from '../policy/assistant-notice.json';
 import { NOTICE_SHA256 } from '../policy/notice-hash';
 import { createPersonalAssistantBridge } from '../lib/assistantSession';
+import { installAssistantDocumentExit } from '../lib/assistantDocumentExit';
 
 export default function AssistantPage() {
   const [mode, setMode] = useState('text');
@@ -82,6 +83,18 @@ export default function AssistantPage() {
     }).catch(() => { if (current === generation.current) setReady(false); });
     return () => { generationRef.current++; bridge.current.clear(); stopOwned().catch(() => {}); };
   }, [mode]);
+
+  useEffect(() => installAssistantDocumentExit({
+    page: window, document,
+    hasWork: () => Boolean(session.current || pendingStart.current || closingActive.current || closeFailed.current),
+    stop: async () => {
+      generation.current++;
+      bridge.current.clear();
+      setReady(false); setAgreed(false); setPhase('closing');
+      await stopOwned();
+    },
+    onFailure: () => { setReady(false); setAgreed(false); setPhase('unavailable'); },
+  }), []);
 
   return (
     <section className="section">

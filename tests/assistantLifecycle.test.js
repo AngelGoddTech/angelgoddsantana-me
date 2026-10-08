@@ -13,6 +13,14 @@ const bundle = await build({entryPoints:['src/components/Assistant.jsx'],bundle:
 
 async function fixture(closeFails=false) {
   let release, prepareCount=0, starts=0, ends=0, ended=false;
+  const listeners = new Map(), navigations = [];
+  const documentEvents = {
+    addEventListener(name, callback) { listeners.set(name, callback); },
+    removeEventListener(name, callback) { if (listeners.get(name) === callback) listeners.delete(name); },
+  };
+  globalThis.document = documentEvents;
+  globalThis.window = {...documentEvents, location: {href:'https://offline.invalid/assistant',
+    assign: href => navigations.push(href)}};
   const deferred=new Promise(resolve=>{release=resolve;});
   globalThis.__OFFLINE_ASSISTANT_BRIDGE={clear(){},prepare:async()=>{prepareCount++;},
     authorizeConsent:async()=>({authorization:'A'.repeat(43)}),
@@ -40,7 +48,16 @@ async function fixture(closeFails=false) {
   const start=()=>find(node=>node.type==='button'&&label(node).startsWith('Start '));
   const agree=()=>find(node=>node.type==='input'&&node.props.type==='checkbox');
   render();await settle();
-  return {render,settle,find,start,agree,release,stats:()=>({prepareCount,starts,ends}),
+  return {render,settle,find,start,agree,release,navigations,stats:()=>({prepareCount,starts,ends}),
+    pagehide(){listeners.get('pagehide')?.();},
+    clickLink(options={}) {
+      const anchor = {href:'https://offline.invalid/privacy', target:'',
+        hasAttribute: () => false, ...options.anchor};
+      const event = {button:0, defaultPrevented:false, target:{closest:()=>anchor},
+        preventDefault(){this.defaultPrevented=true;}, ...options.event};
+      listeners.get('click')?.(event);
+      return event;
+    },
     async begin(){agree().props.onChange({target:{checked:true}});render();assert.equal(start().props.disabled,false);start().props.onClick();await settle();},
     end:()=>find(node=>node.type==='button'&&label(node)==='End conversation').props.onClick()};
 }
@@ -54,6 +71,46 @@ test('End during pending SDK creation keeps controls closed until disconnect com
   f.release();await closed;await f.settle();
   assert.equal(f.stats().ends,1);assert.equal(f.start().props.disabled,true);
   assert.equal(f.agree().props.checked,false);
+});
+
+test('same-window document navigation waits for a pending SDK session to close',async()=>{
+  const f=await fixture();await f.begin();
+  const click=f.clickLink();assert.equal(click.defaultPrevented,true);
+  await f.settle();assert.deepEqual(f.navigations,[]);
+  f.release();await f.settle();
+  assert.equal(f.stats().ends,1);
+  assert.deepEqual(f.navigations,['https://offline.invalid/privacy']);
+});
+
+test('active-session navigation closes explicitly; a failed close prevents navigation',async()=>{
+  for(const fails of [false,true]) {
+    const f=await fixture(fails);await f.begin();f.release();await f.settle();
+    const click=f.clickLink();assert.equal(click.defaultPrevented,true);await f.settle();
+    assert.equal(f.stats().ends,1);assert.equal(f.navigations.length,fails?0:1);
+    assert.equal(f.start().props.disabled,true);
+  }
+});
+
+test('pagehide invalidates active and pending sessions without relying on React unmount',async()=>{
+  for(const active of [false,true]) {
+    const f=await fixture();await f.begin();
+    if(active){f.release();await f.settle();}
+    f.pagehide();f.release();await f.settle();
+    assert.equal(f.stats().ends,1);assert.deepEqual(f.navigations,[]);
+  }
+});
+
+test('new-tab, modified, download and same-document links retain their semantics',async()=>{
+  const f=await fixture();await f.begin();f.release();await f.settle();
+  for(const options of [
+    {anchor:{target:'_blank'}},{event:{metaKey:true}},{event:{ctrlKey:true}},
+    {event:{shiftKey:true}},{event:{button:1}},{event:{defaultPrevented:true}},
+    {anchor:{hasAttribute:()=>true}},{anchor:{href:'https://offline.invalid/assistant#notice'}},
+  ]) {
+    const click=f.clickLink(options);await f.settle();
+    assert.equal(click.defaultPrevented,options.event?.defaultPrevented===true);
+    assert.equal(f.stats().ends,0);assert.deepEqual(f.navigations,[]);
+  }
 });
 
 test('Mode change waits for pending old SDK and explicit new agreement',async()=>{
