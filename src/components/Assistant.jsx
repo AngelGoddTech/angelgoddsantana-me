@@ -80,12 +80,7 @@ export default function AssistantPage() {
     }).then(() => {
       if (current === generation.current) { setReady(true); setPhase('awaiting'); }
     }).catch(() => { if (current === generation.current) setReady(false); });
-    return () => { generationRef.current++; bridge.current.clear(); stopOwned().catch(() => {});
-      // SPA route transitions cannot change the document Permissions-Policy.
-      // Leaving this scoped microphone document therefore loads a fresh page.
-      if (globalThis.location?.pathname !== '/assistant' && globalThis.location?.href)
-        globalThis.location.replace(globalThis.location.href);
-    };
+    return () => { generationRef.current++; bridge.current.clear(); stopOwned().catch(() => {}); };
   }, [mode]);
 
   return (

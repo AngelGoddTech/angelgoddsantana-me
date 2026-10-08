@@ -10,7 +10,7 @@ function LegalLinks() {
       <Link to="/terms">Assistant terms</Link>{' · '}
       <Link to="/ai-retention-policy">Adopted retention policy</Link>{' · '}
       <Link to="/ai-retention-policy/azure-copy-amendment">Full Azure-copy retention policy</Link>{' · '}
-      <Link to="/assistant">Review the conversation notice</Link>
+      <a href="/assistant">Review the conversation notice</a>
     </p>
   );
 }
