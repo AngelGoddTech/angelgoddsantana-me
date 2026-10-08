@@ -27,6 +27,7 @@ PATHS = {
 NOTICE_FIELDS = frozenset({"source", "mode", "language", "policyVersion", "noticeVersion", "noticeSha256"})
 HOST_SOURCES = {"goddtechnologies.com": "web-corporate", "samgov.goddtechnologies.com": "web-samgov",
                 "angelgoddsantana.me": "web-personal"}
+MAX_JSON_DEPTH = 16
 
 
 def unique_object(pairs):
@@ -41,7 +42,33 @@ def unique_object(pairs):
 def read_json(raw, maximum=2048):
     if not isinstance(raw, bytes) or not 0 < len(raw) <= maximum:
         raise ValueError("invalid body length")
-    return json.loads(raw.decode("utf-8"), object_pairs_hook=unique_object)
+    text = raw.decode("utf-8")
+    # Bound container nesting before invoking the recursive decoder. Brackets
+    # inside JSON strings (including escaped quotes) are ordinary text.
+    depth = 0
+    quoted = escaped = False
+    for character in text:
+        if quoted:
+            if escaped:
+                escaped = False
+            elif character == "\\":
+                escaped = True
+            elif character == '"':
+                quoted = False
+        elif character == '"':
+            quoted = True
+        elif character in "[{":
+            depth += 1
+            if depth > MAX_JSON_DEPTH:
+                raise ValueError("invalid JSON nesting")
+        elif character in "]}":
+            depth -= 1
+    try:
+        return json.loads(text, object_pairs_hook=unique_object)
+    except RecursionError:
+        # Preserve the routes' bounded 400 contract even on runtimes/stacks
+        # whose parser recursion limit is lower than the explicit depth bound.
+        raise ValueError("invalid JSON nesting") from None
 
 
 def request_cookie(raw):

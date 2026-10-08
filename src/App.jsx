@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { BrowserRouter, Link, NavLink, Route, Routes, useLocation } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import {
   ArrowRight,
   ArrowUpRight,
@@ -21,6 +21,7 @@ import './App.css';
 import SelectedWork from './components/SelectedWork';
 import PrivacyPage, { AssistantTermsPage, RetentionPolicyPage, AzureCopyAmendmentPage } from './components/Privacy';
 import AssistantPage from './components/Assistant';
+import { Link, NavLink } from './components/DocumentScopedLink';
 
 const RESUME_PDF = '/documents/Angel_Godd_Santana_Principal_Cloud_AI_Architect_Resume.pdf';
 const RESUME_DOCX = '/documents/Angel_Godd_Santana_Principal_Cloud_AI_Architect_Resume.docx';
@@ -38,8 +39,14 @@ const navigation = [
 
 function ScrollToTop() {
   const { pathname } = useLocation();
+  const assistantDocument = useRef(globalThis.location?.pathname === '/assistant');
 
   useEffect(() => {
+    // History/imperative router transitions also need a fresh response policy.
+    if (assistantDocument.current !== (pathname === '/assistant')) {
+      window.location.replace(window.location.href);
+      return;
+    }
     window.scrollTo(0, 0);
   }, [pathname]);
 

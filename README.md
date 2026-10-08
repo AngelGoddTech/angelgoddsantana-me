@@ -54,6 +54,18 @@ Local gate checks:
 
 ```bash
 python -m unittest discover -s tests -p 'test_*.py'
-node --test tests/*.test.js
 pnpm build
+node --test tests/*.test.js
+```
+
+The document-policy regression requires Node.js 22 or newer, Chrome and Flask.
+It uses a fresh headless Chrome profile and a local
+Flask fixture with a simulated bridge. It never requests a microphone or starts
+a conversation, and it blocks requests outside the fixture's loopback origin.
+Build first, then run it with the local browser and Python paths:
+
+```bash
+pnpm build
+ASSISTANT_TEST_CHROME=/path/to/chrome ASSISTANT_TEST_PYTHON=/path/to/python \
+  node --test tests/assistantNavigation.browser.test.js
 ```

@@ -75,6 +75,22 @@ class PersonalProductionBridgeTests(unittest.TestCase):
         self.assertEqual(self.client.post('/api/assistant/challenge',base_url='http://angelgoddsantana.me',headers=self.headers,json=dict(mode='text',language='en')).status_code,200)
         self.assertEqual(self.client.post('/api/assistant/challenge',base_url='http://foreign.invalid',headers=self.headers,json=dict(mode='text',language='en')).status_code,403)
 
+    def test_microphone_permission_is_exact_document_and_bridge_scoped(self):
+        # Use a temporary static response so this route-level check needs no build.
+        from unittest.mock import patch
+        from flask import Response
+        with patch('app.send_from_directory', side_effect=lambda *_args: Response('<html></html>')):
+            for enabled in (False, True):
+                app.config['ASSISTANT_BRIDGE_ENABLED'] = enabled
+                for route in ('/assistant', '/assistant?mode=voice', '/assistant/', '/Assistant',
+                              '/', '/privacy', '/terms', '/ai-retention-policy',
+                              '/ai-retention-policy/azure-copy-amendment', '/contact', '/assets/main.js'):
+                    with self.subTest(enabled=enabled, route=route):
+                        response = self.client.get(route, base_url=self.origin)
+                        expected = 'self' if enabled and route.split('?')[0] == '/assistant' else ''
+                        self.assertEqual(response.headers['Permissions-Policy'],
+                            f'camera=(), geolocation=(), microphone=({expected})')
+
 
 if __name__=='__main__':
     unittest.main()
