@@ -20,7 +20,7 @@ import {
 import './App.css';
 import SelectedWork from './components/SelectedWork';
 import PrivacyPage, { AssistantTermsPage, RetentionPolicyPage, AzureCopyAmendmentPage } from './components/Privacy';
-import AssistantPage from './components/Assistant';
+import AssistantUnavailable from './components/AssistantUnavailable';
 import { Link, NavLink } from './components/DocumentScopedLink';
 
 const RESUME_PDF = '/documents/Angel_Godd_Santana_Principal_Cloud_AI_Architect_Resume.pdf';
@@ -121,7 +121,6 @@ function Footer() {
           <Link to="/selected-work"><ShieldCheck size={16} /> Selected work</Link>
           <Link to="/privacy">Assistant privacy</Link>
           <Link to="/terms">Assistant terms</Link>
-          <a href="/assistant">AI assistant</a>
         </div>
         <p className="copyright">© {new Date().getFullYear()} Angel Godd-Santana. U.S. remote.</p>
       </div>
@@ -553,7 +552,7 @@ function App() {
             <Route path="/terms" element={<AssistantTermsPage />} />
             <Route path="/ai-retention-policy" element={<RetentionPolicyPage />} />
             <Route path="/ai-retention-policy/azure-copy-amendment" element={<AzureCopyAmendmentPage />} />
-            <Route path="/assistant" element={<AssistantPage />} />
+            <Route path="/assistant" element={<AssistantUnavailable />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
