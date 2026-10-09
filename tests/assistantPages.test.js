@@ -30,6 +30,18 @@ async function loadComponent(entry) {
   return module.exports;
 }
 
+test('public assistant route shows a static contact hold without session controls', async () => {
+    const hold = await loadComponent('src/components/AssistantUnavailable.jsx');
+    const html = renderToStaticMarkup(createElement(hold.default));
+    assert.match(html, /The AI assistant is temporarily unavailable/);
+    for (const path of ['/contact', '/privacy', '/terms']) assert.ok(html.includes(`href="${path}"`));
+    assert.doesNotMatch(html, /<(?:script|iframe|form|input|textarea|button)\b|agent_\d|ElevenLabsClient|startSession/);
+    const appSource = await readFile('src/App.jsx', 'utf8');
+    assert.match(appSource, /import AssistantUnavailable from '\.\/components\/AssistantUnavailable'/);
+    assert.match(appSource, /path="\/assistant" element=\{<AssistantUnavailable \/>\}/);
+    assert.doesNotMatch(appSource, /from '\.\/components\/Assistant'|href="\/assistant"/);
+});
+
 test('legal documents and consent-gated assistant render without a provider connection', async () => {
     const legal = await loadComponent('src/components/Privacy.jsx');
     const assistant = await loadComponent('src/components/Assistant.jsx');
