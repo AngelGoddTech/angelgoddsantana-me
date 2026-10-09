@@ -7,16 +7,15 @@ const {build} = createRequire(require.resolve('vite'))('esbuild');
 const bundle = await build({entryPoints:['src/components/Assistant.jsx'],bundle:true,write:false,
   platform:'node',format:'cjs',jsx:'automatic',external:['react','react/jsx-runtime'],
   plugins:[{name:'offline-session',setup(builder){
-    builder.onResolve({filter:/assistantSession$/},()=>({path:'offline-session',namespace:'fixture'}));
-    builder.onLoad({filter:/.*/,namespace:'fixture'},()=>({contents:'export const createPersonalAssistantBridge = () => globalThis.__OFFLINE_ASSISTANT_BRIDGE;'}));
+    builder.onResolve({filter:/assistantDirect$/},()=>({path:'offline-session',namespace:'fixture'}));
+    builder.onLoad({filter:/.*/,namespace:'fixture'},()=>({contents:'export const createPersonalDirectSession = () => globalThis.__OFFLINE_ASSISTANT_BRIDGE;'}));
   }}]});
 
 async function fixture(closeFails=false) {
   let release, prepareCount=0, starts=0, ends=0, ended=false;
   const deferred=new Promise(resolve=>{release=resolve;});
   globalThis.__OFFLINE_ASSISTANT_BRIDGE={clear(){},prepare:async()=>{prepareCount++;},
-    authorizeConsent:async()=>({authorization:'A'.repeat(43)}),
-    startAuthorizedSession:async(options)=>{starts++;await deferred;options.callbacks?.onConnect({conversationId:'conv_offline_policy_link'});return {isOpen:()=>!ended,endSession:async()=>{
+    startSession:async(options)=>{starts++;await deferred;options.callbacks?.onConnect({conversationId:'conv_offline_policy_link'});return {isOpen:()=>!ended,endSession:async()=>{
       if(!ended){ended=true;ends++;}if(closeFails)throw Error('offline failed disconnect');
     }}}};
   const slots=[],effects=[];let cursor=0;

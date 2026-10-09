@@ -20,6 +20,19 @@ class AssistantGateTests(unittest.TestCase):
                                 headers=self.headers if headers is None else headers,
                                 base_url='https://angelgoddsantana.me')
 
+    def test_assistant_microphone_permission_is_independent_of_retired_bridge(self):
+        for enabled in (False, True):
+            with self.subTest(enabled=enabled), app.test_request_context('/assistant'):
+                previous = app.config['ASSISTANT_BRIDGE_ENABLED']
+                app.config['ASSISTANT_BRIDGE_ENABLED'] = enabled
+                try:
+                    with self.client.get('/assistant') as response:
+                        self.assertIn('microphone=(self)', response.headers['Permissions-Policy'])
+                    with self.client.get('/') as response:
+                        self.assertIn('microphone=()', response.headers['Permissions-Policy'])
+                finally:
+                    app.config['ASSISTANT_BRIDGE_ENABLED'] = previous
+
     def test_readiness_never_authorizes_connection(self):
         response = self.client.get('/api/assistant/readiness', base_url='https://angelgoddsantana.me')
         value = response.get_json()

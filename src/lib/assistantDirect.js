@@ -18,6 +18,7 @@
                     request.consent?.source !== source || typeof request.isCurrent !== 'function')
                     throw new Error('assistant_consent_required');
                 const sdk = await loadSdk(); // No provider script before agreement.
+                if (typeof sdk?.Conversation?.startSession !== 'function') throw new Error('assistant_sdk_unavailable');
                 if (!request.isCurrent()) return {isOpen: () => false, endSession: async () => {}};
                 let session, ended = false, connected = false, accepted = false, failed = false, close;
                 let limit;
@@ -75,7 +76,7 @@
                     if (connected) callbacks.onConnect?.({conversationId: session.getId()});
                     limit = setTimeout(() => {
                         endSession().then(() => callbacks.onDisconnect?.({reason: 'session_limit'})).catch(() => callbacks.onError?.());
-                    }, 600000);
+                    }, 420000);
                     return handle;
                 } catch (error) {
                     if (session) await endSession();
@@ -94,8 +95,19 @@ export function createPersonalDirectSession() {
         script.src = 'https://unpkg.com/@elevenlabs/client@1.27.0/dist/lib.iife.js';
         script.integrity = 'sha384-ekuWfdL0BkeVAWv24yeCWtzVwYDQd4pCkPL5TKVDLmwDBeVxS2cTwo0wfsUNaFkJ';
         script.crossOrigin = 'anonymous';
-        script.onload = () => resolve(globalThis.ElevenLabsClient);
-        script.onerror = () => reject(new Error('assistant_sdk_unavailable'));
+        let done = false, timer;
+        const finish = success => {
+            if (done) return;
+            done = true;
+            clearTimeout(timer);
+            if (success && typeof globalThis.ElevenLabsClient?.Conversation?.startSession === 'function')
+                resolve(globalThis.ElevenLabsClient);
+            else reject(new Error('assistant_sdk_unavailable'));
+        };
+        script.async = true;
+        script.onload = () => finish(true);
+        script.onerror = () => finish(false);
+        timer = setTimeout(() => finish(false), 15000);
         document.head.appendChild(script);
     });
     return globalThis.GoddTechDirectAssistant.createDirectSession({
