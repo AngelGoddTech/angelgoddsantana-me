@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import notice from '../policy/assistant-notice.json';
-import { NOTICE_SHA256 } from '../policy/notice-hash';
-import { createPersonalAssistantBridge } from '../lib/assistantSession';
+import { createPersonalDirectSession } from '../lib/assistantDirect';
 
 export default function AssistantPage() {
   const [mode, setMode] = useState('text');
@@ -17,7 +16,7 @@ export default function AssistantPage() {
   const closingActive = useRef(false);
   const closeFailed = useRef(false);
   const generation = useRef(0);
-  if (!bridge.current) bridge.current = createPersonalAssistantBridge(notice, NOTICE_SHA256);
+  if (!bridge.current) bridge.current = createPersonalDirectSession();
 
   async function stopOwned() {
     closingActive.current = true;
@@ -50,9 +49,7 @@ export default function AssistantPage() {
     setPhase('connecting');
     setMessages([]);
     const opening = (async () => {
-      const authorization = await bridge.current.authorizeConsent({source: notice.source, mode, language: notice.language,
-        policyVersion: notice.policyVersion, noticeVersion: notice.noticeVersion, noticeSha256: NOTICE_SHA256});
-      return bridge.current.startAuthorizedSession({authorization: authorization.authorization, textOnly: mode === 'text',
+      return bridge.current.startSession({consent: {source: notice.source, mode}, textOnly: mode === 'text',
         isCurrent: () => current === generation.current,
         callbacks: {onConnect: () => { if (current === generation.current) setPhase('active'); },
           onDisconnect: () => { if (current === generation.current) { session.current = null; setPhase('awaiting'); setAgreed(false); } },

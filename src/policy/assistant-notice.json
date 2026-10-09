@@ -2,24 +2,33 @@
   "source": "web-personal",
   "language": "en",
   "policyVersion": "GT-AI-RETENTION-2026-10-07-v1.1-azure-copy",
-  "noticeVersion": "GT-WEB-CONSENT-2026-10-07-v1.1-azure-copy-compact",
+  "noticeVersion": "GT-WEB-CONSENT-2026-10-09-simple-public-v1",
   "introduction": "This is Angel Godd-Santana's AI assistant, operated by Godd Technologies, LLC for ordinary professional inquiries. You are interacting with software, not Angel.",
   "modes": {
     "text": "Your typed messages and AI replies are stored as a transcript for your inquiry and follow-up. Text mode does not request microphone access or authorize voice recording.",
     "voice": "Your spoken conversation is recorded and transcribed for your inquiry and follow-up. The assistant uses an AI-generated version of Angel Godd-Santana's voice. Microphone access requires your separate voice agreement before connecting."
   },
   "providers": "ElevenLabs processes conversations and speech; OpenAI Luna generates replies with Google Gemini fallback. Microsoft Azure hosts the workflow and Company copies, Notion holds the inbox, Azure Communication Services sends email notifications, and ntfy sends push notifications.",
-  "retention": "The Company Azure copy becomes eligible for disposition 90 elapsed days of 24 hours each in UTC after the verified actual conversation start. Copying, downloading and releasing Keep never restart that clock. Only an explicit Owner Keep decision identifying the records, reason and review date protects the Company copy. Provider retention is separate; Azure Keep does not hold or restore the ElevenLabs record.",
-  "copies": "With your agreement, final transcripts and covered voice recordings are copied to private Azure storage, encrypted in transit and at rest, with retrieval limited to the authenticated Company Owner. Each permanent deletion requires separate exact-record approval. Notion Trash is recoverable; email, push, downloads, logs and backups require separate handling. Day 90 does not promise erasure of every copy.",
+  "retention": "ElevenLabs stores conversation history and voice recordings. The Company receives conversation summaries and follow-up details through its existing Azure, Notion, email and push workflow. Provider history, the Company inbox, notifications, downloads and backups have separate retention controls. No automatic deletion on day 90 or removal of every copy is promised. The automatic Azure recording archive and Owner Keep workflow are not enabled for these new public sessions. Existing records and their controls are unchanged. For a privacy or deletion request, email support@goddtechnologies.com with subject Privacy Request.",
+  "copies": "Conversation summaries and follow-up details may be available to the Company through the listed services. Declining does not start a session. Text agreement does not authorize microphone access or recorded voice.",
   "restrictions": "Do not submit credentials, full payment-card details, classified information, CUI, nonpublic FCI, export-controlled data or other restricted or sensitive information. AI replies need human review and cannot book meetings, confirm employment availability, quote rates or create an engagement.",
   "links": [
-    { "href": "/privacy", "label": "Privacy and provider disclosures" },
-    { "href": "/terms", "label": "Assistant terms" },
-    { "href": "/ai-retention-policy/azure-copy-amendment", "label": "Privacy & recording policy" }
+    {
+      "href": "/privacy",
+      "label": "Privacy and provider disclosures"
+    },
+    {
+      "href": "/terms",
+      "label": "Assistant terms"
+    },
+    {
+      "href": "/ai-retention-policy/azure-copy-amendment",
+      "label": "Privacy & recording policy"
+    }
   ],
   "agreement": {
-    "text": "I agree to processing my text conversation and preserving its transcript in the Company Azure copy under these disclosures.",
-    "voice": "I agree to microphone access, speech processing, recording and transcription of my voice conversation, and preserving the covered recordings and transcript in the Company Azure copy under these disclosures."
+    "text": "I agree to processing and storing this text conversation under these disclosures.",
+    "voice": "I agree to microphone access, speech processing, recording, transcription and storage of this voice conversation under these disclosures."
   },
   "renewal": "Changing mode or a material notice requires new agreement.",
   "alternative": "You can email support@goddtechnologies.com instead. For privacy requests, use the subject Privacy Request. Angel's professional contact links remain available separately."
