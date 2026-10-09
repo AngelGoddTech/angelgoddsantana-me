@@ -84,7 +84,9 @@ export function AzureCopyAmendmentPage() {
       <div className="shell narrow-copy legal-copy">
         <h1>Azure-copy retention policy</h1>
         <p role="status">Owner adopted October 7, 2026. The current public assistant uses the notice shown on the assistant page.</p>
-        <p>{notice.retention}</p><article aria-label="Azure-copy retention amendment">
+        <p>{notice.retention}</p>
+        <p>The preserved Azure-copy amendment below applies only to records separately enrolled in that archive workflow. Agreement to the current public assistant notice does not enroll a conversation in that workflow.</p>
+        <article aria-label="Azure-copy retention amendment">
           <pre className="policy-document" aria-label="Full Azure-copy amendment text">{amendmentMarkdown}</pre>
         </article>
         <p>Read this amendment with the <Link to="/ai-retention-policy">original adopted retention policy</Link>, <a href="https://goddtechnologies.com/privacy">Company Privacy Policy</a> and <a href="https://goddtechnologies.com/terms">Terms of Use and Service</a>.</p>

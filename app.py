@@ -188,7 +188,7 @@ def add_response_headers(response):
     response.headers.setdefault('X-Frame-Options', 'DENY')
     response.headers.setdefault('Referrer-Policy', 'strict-origin-when-cross-origin')
     response.headers.setdefault('Permissions-Policy', 'camera=(), geolocation=(), microphone=()')
-    if request.path == '/assistant' and app.config['ASSISTANT_BRIDGE_ENABLED']:
+    if request.path == '/assistant':
         response.headers['Permissions-Policy'] = 'camera=(), geolocation=(), microphone=(self)'
     if request.path == '/api' or request.path.startswith('/api/'):
         response.headers['Cache-Control'] = 'no-store'
