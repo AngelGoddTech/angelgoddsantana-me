@@ -15,13 +15,14 @@ async function exercise(path, source, agentId) {
   const sdk = {Conversation: {async startSession(value) {
     starts++; options = value; value.onConnect();
     return {getId: () => 'conv_offline', endSession: async () => { ends++; },
-      sendUserMessage: value => { sent = value; }};
+      sendUserMessage: value => { sent = value; }, getInputVolume: () => .42, getOutputVolume: () => .73,
+      setMicMuted: value => { muted = value; }};
   }}};
   const make = loadSdk => scope.GoddTechDirectAssistant.createDirectSession({agentId, source, loadSdk});
   const adapter = make(async () => { loads++; return sdk; });
-  let current = true, received, disconnected;
+  let current = true, received, disconnected, voiceMode, muted;
   const request = mode => ({consent: {source, mode}, textOnly: mode === 'text', isCurrent: () => current,
-    callbacks: {onMessage: value => { received = value; }, onDisconnect: value => { disconnected = value; }}});
+    callbacks: {onModeChange: value => { voiceMode = value.mode; }, onMessage: value => { received = value; }, onDisconnect: value => { disconnected = value; }}});
   await assert.rejects(adapter.startSession(request('text'))); checks++;
   await adapter.prepare('text'); equal(loads, 0);
   await assert.rejects(adapter.startSession({...request('text'), consent: {source, mode: 'voice'}})); checks++;
@@ -37,7 +38,13 @@ async function exercise(path, source, agentId) {
   await adapter.prepare('voice');
   const voice = await adapter.startSession(request('voice')); equal(options.textOnly, false);
   await assert.rejects(async () => voice.sendUserMessage('text in voice')); checks++;
+  equal(voice.getInputVolume(), .42); equal(voice.getOutputVolume(), .73);
+  voice.setMicMuted(true); equal(muted, true); voice.setMicMuted(false); equal(muted, false);
+  options.onModeChange({mode: 'speaking'}); equal(voiceMode, 'speaking');
   options.onGuardrailTriggered({reason: 'refused'}); await voice.endSession(); equal(ends, 2);
+  equal(voice.getInputVolume(), 0); equal(voice.getOutputVolume(), 0);
+  await assert.rejects(async () => voice.setMicMuted(true)); checks++;
+  options.onModeChange({mode: 'listening'}); equal(voiceMode, 'speaking');
   const limited = await adapter.startSession(request('text'));
   const timer = [...timers.values()].find(value => value.ms === 420000);
   assert.ok(timer); checks++; timer.fn();

@@ -1,0 +1,11 @@
+{
+  "repository": "https://github.com/elevenlabs/ui",
+  "commit": "23c31bd3088814215a8b5d0bfb56b327cad1a578",
+  "files": [
+    "apps/www/registry/elevenlabs-ui/ui/orb.tsx",
+    "apps/www/registry/elevenlabs-ui/examples/orb-demo.tsx",
+    "apps/www/content/docs/components/orb.mdx",
+    "LICENSE.md",
+    "apps/www/public/r/orb.json"
+  ]
+}

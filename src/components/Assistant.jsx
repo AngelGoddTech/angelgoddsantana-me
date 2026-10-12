@@ -2,9 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import notice from '../policy/assistant-notice.json';
 import { createPersonalDirectSession } from '../lib/assistantDirect';
 import './Assistant.css';
+import VoiceMount from './VoiceMount';
 
 export default function AssistantPage({ createSession = createPersonalDirectSession } = {}) {
   const [mode, setMode] = useState('text');
+  const [voiceMode, setVoiceMode] = useState('listening');
+  const [muted, setMuted] = useState(false);
   const [ready, setReady] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [phase, setPhase] = useState('unavailable');
@@ -36,7 +39,7 @@ export default function AssistantPage({ createSession = createPersonalDirectSess
 
   async function end() {
     const current = ++generation.current;
-    setAgreed(false); setPhase('closing');
+    setAgreed(false); setMuted(false); setPhase('closing');
     try {
       await stopOwned();
       if (current === generation.current) setPhase(ready ? 'ended' : 'unavailable');
@@ -53,6 +56,7 @@ export default function AssistantPage({ createSession = createPersonalDirectSess
       return bridge.current.startSession({consent: {source: notice.source, mode}, textOnly: mode === 'text',
         isCurrent: () => current === generation.current,
         callbacks: {onConnect: () => { if (current === generation.current) setPhase('active'); },
+          onModeChange: value => { if (current === generation.current && mode === 'voice') setVoiceMode(value?.mode === 'speaking' ? 'speaking' : 'listening'); },
           onDisconnect: () => { if (current === generation.current) { session.current = null; setPhase('ended'); setAgreed(false); } },
           onError: () => { if (current === generation.current) { end().then(() => { setReady(false); setPhase('error'); }); } },
           onGuardrailTriggered: () => { if (current === generation.current) end(); },
@@ -71,7 +75,7 @@ export default function AssistantPage({ createSession = createPersonalDirectSess
   useEffect(() => {
     const generationRef = generation;
     const current = ++generation.current;
-    setReady(false); setAgreed(false); setPhase('unavailable');
+    setReady(false); setAgreed(false); setMuted(false); setVoiceMode('listening'); setPhase('unavailable');
     stopOwned().then(() => {
       if (closeFailed.current || current !== generation.current) throw new Error('assistant_unavailable');
       return bridge.current.prepare(mode);
@@ -124,7 +128,7 @@ export default function AssistantPage({ createSession = createPersonalDirectSess
         <article className="assistant-panel" data-phase={phase} aria-labelledby="assistant-panel-title">
           <header className="assistant-panel-header">
             <div className="assistant-identity"><img src="./ags-mark.svg" alt="" width="44" height="44" /><div><p>Professional inquiries</p><h2 id="assistant-panel-title">Angel’s AI assistant</h2></div></div>
-            <span className="assistant-state-pill">{labels[phase]}</span>
+            <span className="assistant-state-pill">{phase === 'active' && mode === 'voice' ? (muted ? 'Microphone muted' : voiceMode === 'speaking' ? 'Speaking' : 'Listening') : labels[phase]}</span>
           </header>
           <div className="assistant-toolbar">
             <fieldset className="assistant-mode-picker assistant-segmented">
@@ -135,9 +139,13 @@ export default function AssistantPage({ createSession = createPersonalDirectSess
                 <span>{value === 'text' ? 'Text' : 'Voice'}</span>
               </label>)}
             </fieldset>
-            {busy && <button className="assistant-end" type="button" disabled={phase === 'closing'} onClick={end}>End conversation</button>}
+            {busy && mode === 'text' && <button className="assistant-end" type="button" disabled={phase === 'closing'} onClick={end}>End conversation</button>}
           </div>
 
+          {mode === 'voice' && <VoiceMount phase={phase} voiceMode={voiceMode} muted={muted}
+            getInputVolume={() => session.current?.getInputVolume?.() ?? 0}
+            getOutputVolume={() => session.current?.getOutputVolume?.() ?? 0}
+            onMute={value => { try { session.current?.setMicMuted(value); setMuted(value); } catch { end(); } }} onEnd={end}/>}
           <div className="assistant-review">
             <p className="assistant-mode-notice" key={mode} data-assistant-mode={mode}>{notice.modes[mode]}</p>
             <details className="assistant-disclosures">
@@ -159,7 +167,7 @@ export default function AssistantPage({ createSession = createPersonalDirectSess
             <button className="button button-primary assistant-start" type="button" disabled={!ready || !agreed || busy} onClick={start}>Start {mode} conversation{ready ? '' : ' — unavailable'}</button>
           </div>
 
-          <div className={`assistant-chat-stage${showTranscript ? ' has-messages' : ''}`}>
+          <div className={`assistant-chat-stage${showTranscript ? ' has-messages' : ''}`} hidden={mode === 'voice' && !showTranscript}>
             <p className="assistant-session-status" role="status">{statusText}</p>
             {showTranscript ? <ol className="assistant-transcript" aria-label="Conversation transcript" aria-live="polite" role="log">
               {messages.map((value, index) => <li className={`assistant-message assistant-message-${value.role}`} key={index}>
