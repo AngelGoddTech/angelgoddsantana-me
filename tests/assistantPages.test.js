@@ -15,7 +15,7 @@ const { build } = createRequire(require.resolve('vite'))('esbuild');
 async function loadComponent(entry) {
   const result = await build({
     entryPoints: [entry], bundle: true, write: false, platform: 'node', format: 'cjs',
-    jsx: 'automatic', external: ['react', 'react-dom', 'react-router-dom'],
+    jsx: 'automatic', external: ['react', 'react-dom', 'react-router-dom'], loader: {'.css': 'empty'},
     plugins: [{ name: 'policy-text', setup(builder) {
       builder.onResolve({ filter: /\.md\?raw$/ }, (args) => ({
         path: path.resolve(args.resolveDir, args.path.replace(/\?raw$/, '')), namespace: 'policy-text',
