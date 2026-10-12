@@ -30,16 +30,16 @@ async function loadComponent(entry) {
   return module.exports;
 }
 
-test('public assistant route shows a static contact hold without session controls', async () => {
-    const hold = await loadComponent('src/components/AssistantUnavailable.jsx');
-    const html = renderToStaticMarkup(createElement(hold.default));
-    assert.match(html, /The AI assistant is temporarily unavailable/);
+test('public assistant route uses the approved consent-gated component', async () => {
+    const assistant = await loadComponent('src/components/Assistant.jsx');
+    const html = renderToStaticMarkup(createElement(assistant.default));
     for (const path of ['/contact', '/privacy', '/terms']) assert.ok(html.includes(`href="${path}"`));
-    assert.doesNotMatch(html, /<(?:script|iframe|form|input|textarea|button)\b|agent_\d|ElevenLabsClient|startSession/);
+    assert.match(html, /type="checkbox" disabled=""/);
+    assert.match(html, /Text mode does not request microphone access or authorize voice recording/);
+    assert.doesNotMatch(html, /<script|<iframe|agent_\d|ElevenLabsClient|startSession/);
     const appSource = await readFile('src/App.jsx', 'utf8');
-    assert.match(appSource, /import AssistantUnavailable from '\.\/components\/AssistantUnavailable'/);
-    assert.match(appSource, /path="\/assistant" element=\{<AssistantUnavailable \/>\}/);
-    assert.doesNotMatch(appSource, /from '\.\/components\/Assistant'|href="\/assistant"/);
+    assert.ok(appSource.includes("import AssistantPage from './components/Assistant';"));
+    assert.ok(appSource.includes('<Route path="/assistant" element={<AssistantPage />} />'));
 });
 
 test('legal documents and consent-gated assistant render without a provider connection', async () => {
