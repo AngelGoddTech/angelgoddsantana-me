@@ -122,4 +122,4 @@
 .assistant-composer>label{font-size:.75rem}.assistant-composer button,.assistant-end{font-size:.8125rem;min-height:44px}
 .assistant-page .assistant-segmented label{min-height:40px;font-size:.875rem}
 .assistant-page .assistant-start{font-size:.875rem;min-height:48px}
-@media(max-width:760px){.assistant-topics,.assistant-direct-contact p{display:none}.assistant-introduction{margin-bottom:0}.desktop-nav>a:not(.active){display:none}.wordmark small{font-size:.55rem}.header-inner{min-height:70px}}
+@media(max-width:760px){.assistant-topics{display:none}.assistant-introduction{margin-bottom:0}.desktop-nav>a:not(.active){display:none}.wordmark small{font-size:.55rem}.header-inner{min-height:70px}}

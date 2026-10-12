@@ -12,10 +12,11 @@ const bundle = await build({entryPoints:['src/components/Assistant.jsx'],bundle:
   }}]});
 
 async function fixture(closeFails=false) {
-  let release, prepareCount=0, starts=0, ends=0, ended=false;
+  let release, prepareCount=0, starts=0, ends=0, ended=false, currentCallbacks, sdkMuted=false;
+  const mutes=[];
   const deferred=new Promise(resolve=>{release=resolve;});
   globalThis.__OFFLINE_ASSISTANT_BRIDGE={clear(){},prepare:async()=>{prepareCount++;},
-    startSession:async(options)=>{starts++;await deferred;options.callbacks?.onConnect({conversationId:'conv_offline_policy_link'});return {isOpen:()=>!ended,endSession:async()=>{
+    startSession:async(options)=>{starts++;await deferred;ended=false;sdkMuted=false;currentCallbacks=options.callbacks;options.callbacks?.onConnect({conversationId:'conv_offline_policy_link'});return {isOpen:()=>!ended,setMicMuted(value){sdkMuted=value;mutes.push(value);},endSession:async()=>{
       if(!ended){ended=true;ends++;}if(closeFails)throw Error('offline failed disconnect');
     }}}};
   const slots=[],effects=[];let cursor=0;
@@ -39,10 +40,30 @@ async function fixture(closeFails=false) {
   const start=()=>find(node=>node.type==='button'&&label(node).startsWith('Start '));
   const agree=()=>find(node=>node.type==='input'&&node.props.type==='checkbox');
   render();await settle();
-  return {render,settle,find,start,agree,release,stats:()=>({prepareCount,starts,ends}),
+  return {render,settle,find,start,agree,release,stats:()=>({prepareCount,starts,ends,sdkMuted,mutes:[...mutes]}),
+    voice:()=>find(node=>typeof node.props?.onMute==='function'),
+    disconnect:()=>{ended=true;currentCallbacks.onDisconnect({reason:'session_limit'});},
+    speaking:()=>currentCallbacks.onModeChange({mode:'speaking'}),
     async begin(){agree().props.onChange({target:{checked:true}});render();assert.equal(start().props.disabled,false);start().props.onClick();await settle();},
     end:()=>find(node=>node.type==='button'&&label(node)==='End conversation').props.onClick()};
 }
+
+test('Muted remote disconnect requires fresh agreement and truthful new microphone state',async()=>{
+  const f=await fixture();
+  f.find(node=>node.type==='input'&&node.props.type==='radio'&&node.props.value==='voice').props.onChange();
+  f.render();await f.settle();await f.begin();f.release();await f.settle();
+  f.voice().props.onMute(true);f.speaking();f.render();
+  assert.equal(f.voice().props.muted,true);assert.equal(f.stats().sdkMuted,true);
+  f.disconnect();f.render();await f.settle();
+  f.speaking();f.render(); // A stale SDK event must not undo the reset.
+  assert.equal(f.agree().props.checked,false);assert.equal(f.start().props.disabled,true);
+  assert.equal(f.voice().props.muted,false);assert.equal(f.voice().props.voiceMode,'listening');
+  await f.begin();await f.settle();
+  assert.equal(f.stats().starts,2);assert.equal(f.stats().sdkMuted,false);
+  assert.equal(f.voice().props.muted,false);assert.equal(f.voice().props.voiceMode,'listening');
+  f.voice().props.onMute(true);f.render();
+  assert.equal(f.stats().sdkMuted,true);assert.equal(f.voice().props.muted,true);
+});
 
 test('End during pending SDK creation keeps controls closed until disconnect completes',async()=>{
   const f=await fixture();await f.begin();

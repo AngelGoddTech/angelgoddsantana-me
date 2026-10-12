@@ -39,7 +39,7 @@ export default function AssistantPage({ createSession = createPersonalDirectSess
 
   async function end() {
     const current = ++generation.current;
-    setAgreed(false); setMuted(false); setPhase('closing');
+    setAgreed(false); setMuted(false); setVoiceMode('listening'); setPhase('closing');
     try {
       await stopOwned();
       if (current === generation.current) setPhase(ready ? 'ended' : 'unavailable');
@@ -50,6 +50,7 @@ export default function AssistantPage({ createSession = createPersonalDirectSess
     if (!ready || !agreed || phase === 'connecting' || session.current || pendingStart.current
         || closingActive.current || closeFailed.current) return;
     const current = ++generation.current;
+    setMuted(false); setVoiceMode('listening');
     setPhase('connecting');
     setMessages([]);
     const opening = (async () => {
@@ -57,7 +58,10 @@ export default function AssistantPage({ createSession = createPersonalDirectSess
         isCurrent: () => current === generation.current,
         callbacks: {onConnect: () => { if (current === generation.current) setPhase('active'); },
           onModeChange: value => { if (current === generation.current && mode === 'voice') setVoiceMode(value?.mode === 'speaking' ? 'speaking' : 'listening'); },
-          onDisconnect: () => { if (current === generation.current) { session.current = null; setPhase('ended'); setAgreed(false); } },
+          onDisconnect: () => { if (current === generation.current) {
+            generation.current++;
+            session.current = null; setMuted(false); setVoiceMode('listening'); setPhase('ended'); setAgreed(false);
+          } },
           onError: () => { if (current === generation.current) { end().then(() => { setReady(false); setPhase('error'); }); } },
           onGuardrailTriggered: () => { if (current === generation.current) end(); },
           onMessage: value => { if (current === generation.current && ['user','agent'].includes(value?.role) && typeof value.message === 'string')
