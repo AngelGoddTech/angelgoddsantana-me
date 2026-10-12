@@ -180,6 +180,7 @@ function HomePage() {
             <h1>Principal cloud and AI architecture for work that has to hold up.</h1>
             <p className="hero-lede">I help organizations design secure, governable cloud and AI platforms—from architecture and identity through production delivery.</p>
             <div className="button-row">
+              <Link to="/assistant" className="button button-dark homepage-assistant-entry" data-assistant-entry><Bot size={20} aria-hidden="true" /><span>Ask Angel’s AI assistant</span></Link>
               <ButtonLink to="/resume">View résumé</ButtonLink>
               <ButtonLink to="/work-with-me" variant="secondary">Explore how I can help</ButtonLink>
             </div>
