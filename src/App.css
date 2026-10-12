@@ -50,6 +50,8 @@ button:focus-visible, a:focus-visible { outline: 3px solid rgba(39, 193, 217, .6
 .button-ghost:hover { color: var(--navy); transform: none; }
 .button-small { padding: 10px 13px; border-radius: 7px; font-size: .76rem; color: #fff; background: var(--navy); }
 .button-row { display: flex; flex-wrap: wrap; gap: 12px; margin: 28px 0 20px; }
+.homepage-assistant-entry { min-height: 48px; max-width: 100%; }
+.homepage-assistant-entry svg { flex-shrink: 0; }
 
 .eyebrow { display: flex; align-items: center; gap: 8px; margin: 0 0 16px; color: var(--blue); font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .71rem; font-weight: 700; letter-spacing: .105em; line-height: 1.2; text-transform: uppercase; }
 .eyebrow span { width: 22px; height: 1px; background: currentColor; }
