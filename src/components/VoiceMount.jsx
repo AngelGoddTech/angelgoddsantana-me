@@ -1,4 +1,4 @@
-import {useEffect,useRef} from 'react';
+import {useEffect,useRef,useState} from 'react';
 let pending;
 function loadPresentation(){
   if(globalThis.GoddTechVoicePresentation)return Promise.resolve(globalThis.GoddTechVoicePresentation);
@@ -11,7 +11,8 @@ function loadPresentation(){
 }
 export default function VoiceMount(props){
   const element=useRef(null),view=useRef(null),latest=useRef(props);latest.current=props;
-  useEffect(()=>{let owned=true;loadPresentation().then(api=>{if(!owned)return;view.current=api.mount(element.current);view.current.update(latest.current);}).catch(()=>{if(owned)element.current.textContent='Voice presentation is unavailable. Use the conversation controls or contact Angel directly.';});return()=>{owned=false;view.current?.destroy();view.current=null;};},[]);
+  const [loaded,setLoaded]=useState(false);
+  useEffect(()=>{let owned=true;loadPresentation().then(api=>{if(!owned)return;view.current=api.mount(element.current);view.current.update(latest.current);setLoaded(true);}).catch(()=>{if(owned)element.current.textContent='Voice presentation is unavailable. You can end the conversation or contact Angel directly.';});return()=>{owned=false;view.current?.destroy();view.current=null;};},[]);
   useEffect(()=>{view.current?.update(props);});
-  return <div ref={element} className="assistant-voice-mount"/>;
+  return <><div ref={element} className="assistant-voice-mount"/>{!loaded&&['connecting','active'].includes(props.phase)&&<button className="assistant-end" type="button" onClick={props.onEnd}>End conversation</button>}</>;
 }
