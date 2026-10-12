@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useRef } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useTexture } from "@react-three/drei"
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import * as THREE from "three"
@@ -38,9 +38,20 @@ export function Orb({
   getOutputVolume,
   className,
 }: OrbProps) {
+  const [reducedMotion, setReducedMotion] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  )
+  useEffect(() => {
+    const preference = window.matchMedia("(prefers-reduced-motion: reduce)")
+    const update = () => setReducedMotion(preference.matches)
+    update()
+    preference.addEventListener("change", update)
+    return () => preference.removeEventListener("change", update)
+  }, [])
   return (
     <div className={className ?? "relative h-full w-full"}>
       <Canvas
+        frameloop={reducedMotion ? "demand" : "always"}
         resize={{ debounce: resizeDebounce }}
         gl={{
           alpha: true,
@@ -49,6 +60,7 @@ export function Orb({
         }}
       >
         <Scene
+          reducedMotion={reducedMotion}
           colors={colors}
           colorsRef={colorsRef}
           seed={seed}
@@ -67,6 +79,7 @@ export function Orb({
 }
 
 function Scene({
+  reducedMotion,
   colors,
   colorsRef,
   seed,
@@ -79,6 +92,7 @@ function Scene({
   getInputVolume,
   getOutputVolume,
 }: {
+  reducedMotion: boolean
   colors: [string, string]
   colorsRef?: React.RefObject<[string, string]>
   seed?: number
@@ -170,6 +184,12 @@ function Scene({
       if (live[1]) targetColor2Ref.current.set(live[1])
     }
     const u = mat.uniforms
+    if (reducedMotion) {
+      u.uOpacity.value = 1
+      u.uInputVolume.value = 0
+      u.uOutputVolume.value = 0.3
+      return
+    }
     u.uTime.value += delta * 0.5
 
     if (u.uOpacity.value < 1) {

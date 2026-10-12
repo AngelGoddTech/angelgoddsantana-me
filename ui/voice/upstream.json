@@ -7,5 +7,10 @@
     "apps/www/content/docs/components/orb.mdx",
     "LICENSE.md",
     "apps/www/public/r/orb.json"
-  ]
+  ],
+  "local_modifications": [
+    "embedded approved Perlin texture",
+    "prefers-reduced-motion demand frame rendering and fixed uniform values"
+  ],
+  "local_orb_sha256": "e72d4a34f4ea1ad37c7b3f66b300e330605b29bd16ec3ebc28ec921f3ae447d0"
 }
