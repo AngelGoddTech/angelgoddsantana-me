@@ -36,6 +36,13 @@
                 const handle = Object.freeze({
                     isOpen: () => accepted && connected && !ended && request.isCurrent(),
                     endSession,
+                    getInputVolume: () => !request.textOnly && handle.isOpen() ? session.getInputVolume?.() ?? 0 : 0,
+                    getOutputVolume: () => !request.textOnly && handle.isOpen() ? session.getOutputVolume?.() ?? 0 : 0,
+                    setMicMuted(muted) {
+                        if (request.textOnly || !handle.isOpen() || typeof muted !== 'boolean' || typeof session.setMicMuted !== 'function')
+                            throw new Error('assistant_microphone_unavailable');
+                        session.setMicMuted(muted);
+                    },
                     sendUserMessage(text) {
                         if (!request.textOnly || !handle.isOpen() || typeof text !== 'string' ||
                             !text.trim() || text.length > 2000) throw new Error('assistant_message_unavailable');
@@ -55,6 +62,9 @@
                             if (!accepted) failed = true;
                             clearTimeout(limit);
                             if (accepted && !ended) callbacks.onDisconnect?.(detail);
+                        },
+                        onModeChange: detail => {
+                            if (!request.textOnly && !ended && request.isCurrent()) callbacks.onModeChange?.(detail);
                         },
                         onMessage: detail => {
                             if (!ended && request.isCurrent()) callbacks.onMessage?.(detail);

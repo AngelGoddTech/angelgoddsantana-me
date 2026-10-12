@@ -5,7 +5,7 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const {build} = createRequire(require.resolve('vite'))('esbuild');
 const bundle = await build({entryPoints:['src/components/Assistant.jsx'],bundle:true,write:false,
-  platform:'node',format:'cjs',jsx:'automatic',external:['react','react/jsx-runtime'],
+  platform:'node',format:'cjs',jsx:'automatic',external:['react','react/jsx-runtime'],loader:{'.css':'empty'},
   plugins:[{name:'offline-session',setup(builder){
     builder.onResolve({filter:/assistantDirect$/},()=>({path:'offline-session',namespace:'fixture'}));
     builder.onLoad({filter:/.*/,namespace:'fixture'},()=>({contents:'export const createPersonalDirectSession = () => globalThis.__OFFLINE_ASSISTANT_BRIDGE;'}));
