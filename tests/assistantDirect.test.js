@@ -22,7 +22,7 @@ async function exercise(path, source, agentId) {
   });
   vm.runInContext(fs.readFileSync(path, 'utf8').replace('export function', 'function'), scope);
   const sdk = {Conversation: {async startSession(value) {
-    starts++; options = value; value.onConnect();
+    starts++; options = value; value.onConnect({conversationId: 'conv_offline'});
     return {getId: () => 'conv_offline', endSession: async () => { ends++; },
       sendUserMessage: value => { sent = value; }, getInputVolume: () => .42, getOutputVolume: () => .73,
       setMicMuted: value => { muted = value; }};
@@ -76,7 +76,7 @@ async function exercise(path, source, agentId) {
   const late = await pending; equal(late.isOpen(), false); equal(ends, 4);
   current = true;
   const brokenClose = make(async () => ({Conversation: {async startSession(value) {
-    value.onConnect(); return {getId: () => 'conv_offline', endSession: async () => { throw Error('offline close failure'); }};
+    value.onConnect({conversationId: 'conv_offline'}); return {getId: () => 'conv_offline', endSession: async () => { throw Error('offline close failure'); }};
   }}}));
   await brokenClose.prepare('text'); const broken = await brokenClose.startSession(request('text'));
   await assert.rejects(broken.endSession()); checks++;
@@ -120,4 +120,49 @@ async function admissionRegression(path, source, agentId) {
   }
 }
 for(const fixture of fixtures)await admissionRegression(...fixture);
+
+// Terminal events must close once even when application callbacks throw.
+async function terminalCallbackRegression(path, source, agentId) {
+  const site = source === 'web-personal' ? 'personal' : source === 'web-samgov' ? 'government' : 'corporate';
+  for (const scenario of ['late-mismatch','late-missing-id','error','guardrail','disconnect','message-throws','early-error','early-missing-id','missing-close']) {
+    let options, ends=0, delivered=0, errorSawClosed=false, handle;
+    const scope=vm.createContext({Date,URL,AbortController,crypto:{randomUUID},setTimeout(){return 1;},clearTimeout(){},
+      async fetch(){const now=Date.now();return {ok:true,text:async()=>JSON.stringify({site,mode:'text',signed_url:'wss://api.elevenlabs.io/v1/convai/conversation?agent_id='+agentId+'&conversation_signature=offline-signature-01234567890123456789&conversation_id=conv_offline',issued_at:new Date(now).toISOString(),expires_at:new Date(now+900000).toISOString(),pause_window_seconds:900})};}
+    });
+    vm.runInContext(fs.readFileSync(path,'utf8').replace('export function','function'),scope);
+    const sdk={Conversation:{async startSession(value){options=value;
+      if(scenario==='early-error')value.onError({code:'offline'});
+      value.onConnect(scenario==='early-missing-id'?{}:{conversationId:'conv_offline'});
+      const result={getId:()=> 'conv_offline',sendUserMessage(){throw Error('closed handle must not send');}};
+      if(scenario!=='missing-close')result.endSession=async()=>{ends++;};return result;
+    }}};
+    const adapter=scope.GoddTechDirectAssistant.createDirectSession({agentId,source,noticeDigests:{text:'a'.repeat(64)},loadSdk:async()=>sdk});await adapter.prepare('text');
+    const request={textOnly:true,consent:{source,mode:'text'},isCurrent:()=>true,callbacks:{
+      onError(){errorSawClosed=!handle || !handle.isOpen();throw Error('consumer error');},
+      onGuardrailTriggered(){throw Error('consumer guardrail');},onDisconnect(){throw Error('consumer disconnect');},
+      onMessage(){delivered++;if(scenario==='message-throws')throw Error('consumer message');}
+    }};
+    if(scenario.startsWith('early-') || scenario==='missing-close') {
+      await assert.rejects(adapter.startSession(request));checks++;
+      equal(ends,scenario==='missing-close'?0:1);
+      if(scenario==='missing-close'){await assert.rejects(adapter.prepare('voice'));checks++;}
+      options.onConnect({conversationId:'conv_offline'});options.onMessage({message:'must stay closed'});equal(delivered,0);
+      continue;
+    }
+    handle=await adapter.startSession(request);equal(handle.isOpen(),true);
+    if(scenario==='late-mismatch')options.onConnect({conversationId:'conv_wrong'});
+    if(scenario==='late-missing-id')options.onConnect({});
+    if(scenario==='error')options.onError({code:'offline'});
+    if(scenario==='guardrail')options.onGuardrailTriggered({code:'offline'});
+    if(scenario==='disconnect')options.onDisconnect({reason:'remote'});
+    if(scenario==='message-throws')options.onMessage({message:'one'});
+    equal(handle.isOpen(),false);
+    if(['late-mismatch','late-missing-id','error'].includes(scenario))equal(errorSawClosed,true);
+    options.onConnect({conversationId:'conv_offline'});options.onMessage({message:'after terminal'});
+    equal(handle.isOpen(),false);equal(delivered,scenario==='message-throws'?1:0);
+    await handle.endSession();await handle.endSession();equal(ends,1);
+    assert.throws(()=>handle.sendUserMessage('after terminal'));checks++;
+  }
+}
+for(const fixture of fixtures)await terminalCallbackRegression(...fixture);
 console.log(JSON.stringify({result: 'PASS', assertions: checks, provider_sessions: 0, microphone_requests: 0}));

@@ -62,14 +62,32 @@
                     if (close) return close;
                     ended = true; connected = false;
                     clearTimeout(limit);
-                    close = Promise.resolve().then(() => session?.endSession()).catch(error => {
+                    close = Promise.resolve().then(() => {
+                        if (typeof session?.endSession !== 'function') throw new Error('assistant_disconnect_unavailable');
+                        return session.endSession();
+                    }).catch(error => {
                         blocked = true;
                         throw error;
                     });
                     return close;
                 };
+                // Consumer callbacks cannot interrupt cleanup or undo a terminal failure.
+                const notify = (name, detail) => {
+                    try { callbacks[name]?.(detail); }
+                    catch {
+                        failed = true; connected = false;
+                        if (session) endSession().catch(() => {});
+                    }
+                };
+                const fail = (name, detail, notifyBeforeAcceptance = true) => {
+                    if (ended || failed) return;
+                    failed = true; connected = false;
+                    clearTimeout(limit);
+                    if (session) endSession().catch(() => {});
+                    if (accepted || notifyBeforeAcceptance) notify(name, detail);
+                };
                 const handle = Object.freeze({
-                    isOpen: () => accepted && connected && !ended && request.isCurrent(),
+                    isOpen: () => accepted && connected && !ended && !failed && request.isCurrent(),
                     endSession,
                     getInputVolume: () => !request.textOnly && handle.isOpen() ? session.getInputVolume?.() ?? 0 : 0,
                     getOutputVolume: () => !request.textOnly && handle.isOpen() ? session.getOutputVolume?.() ?? 0 : 0,
@@ -88,46 +106,37 @@
                     session = await sdk.Conversation.startSession({
                         signedUrl: access.signed_url, textOnly: request.textOnly, connectionType: 'websocket',
                         onConnect: detail => {
-                            if (detail?.conversationId && detail.conversationId !== conversationId) {
-                                failed = true; connected = false;
-                                if (accepted && !ended) { callbacks.onError?.(); endSession().catch(() => {}); }
+                            if (ended || failed || !request.isCurrent()) return;
+                            if (detail?.conversationId !== conversationId) {
+                                fail('onError', {code: 'assistant_provider_binding_unavailable'});
                                 return;
                             }
                             connected = true;
-                            if (accepted && !ended && request.isCurrent())
-                                callbacks.onConnect?.({conversationId: session.getId()});
+                            if (accepted) notify('onConnect', {conversationId});
                         },
-                        onDisconnect: detail => {
-                            connected = false;
-                            if (!accepted) failed = true;
-                            clearTimeout(limit);
-                            if (accepted && !ended) callbacks.onDisconnect?.(detail);
-                        },
+                        onDisconnect: detail => fail('onDisconnect', detail, false),
                         onModeChange: detail => {
-                            if (!request.textOnly && !ended && request.isCurrent()) callbacks.onModeChange?.(detail);
+                            if (accepted && !request.textOnly && !ended && !failed && request.isCurrent()) notify('onModeChange', detail);
                         },
                         onMessage: detail => {
-                            if (!ended && request.isCurrent()) callbacks.onMessage?.(detail);
+                            if (accepted && !ended && !failed && request.isCurrent()) notify('onMessage', detail);
                         },
-                        onError: detail => {
-                            connected = false; failed = true;
-                            callbacks.onError?.(detail);
-                            if (accepted) endSession().catch(() => {});
-                        },
-                        onGuardrailTriggered: detail => {
-                            callbacks.onGuardrailTriggered?.(detail);
-                            endSession().catch(() => {});
-                        }
+                        onError: detail => fail('onError', detail),
+                        onGuardrailTriggered: detail => fail('onGuardrailTriggered', detail)
                     });
-                    if (ended || !request.isCurrent()) { await session.endSession(); return handle; }
+                    if (typeof session?.endSession !== 'function') {
+                        blocked = true; failed = true; throw new Error('assistant_disconnect_unavailable');
+                    }
+                    if (ended || !request.isCurrent()) { await endSession(); return handle; }
                     if (failed || typeof session?.getId !== 'function' || session.getId() !== conversationId) {
                         await endSession(); throw new Error('assistant_provider_binding_unavailable');
                     }
                     accepted = true;
-                    callbacks.onConversationCreated?.(handle);
-                    if (connected) callbacks.onConnect?.({conversationId: session.getId()});
+                    notify('onConversationCreated', handle);
+                    if (connected && !failed && !ended) notify('onConnect', {conversationId});
+                    if (failed || ended) { await endSession(); throw new Error('assistant_consumer_unavailable'); }
                     limit = setTimeout(() => {
-                        endSession().then(() => callbacks.onDisconnect?.({reason: 'session_limit'})).catch(() => callbacks.onError?.());
+                        endSession().then(() => notify('onDisconnect', {reason: 'session_limit'}), () => notify('onError'));
                     }, 420000);
                     return handle;
                 } catch (error) {
