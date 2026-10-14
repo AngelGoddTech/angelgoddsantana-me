@@ -25,7 +25,7 @@
                 if (!site || !/^[a-f0-9]{64}$/.test(noticeDigests?.[mode] || '')) throw new Error('assistant_unavailable');
                 const controller = new AbortController();
                 const timeout = setTimeout(() => controller.abort(), 15000);
-                let access;
+                let access, conversationId;
                 try {
                     const response = await fetch('https://calldesk.agreeablemoss-8b616ba9.eastus2.azurecontainerapps.io/public/website/' + site + '/admission', {
                         method: 'POST', headers: {'Content-Type': 'application/json'}, mode: 'cors', credentials: 'omit',
@@ -42,14 +42,16 @@
                     if (keys !== 'expires_at,issued_at,mode,pause_window_seconds,signed_url,site'
                         || access.site !== site || access.mode !== mode || access.pause_window_seconds !== 900
                         || !Number.isFinite(issued) || !Number.isFinite(expires) || expires - issued !== 900000
-                        || Date.now() >= expires || Math.abs(Date.now() - issued) > 60000
                         || !access.signed_url.startsWith('wss://api.elevenlabs.io/v1/convai/conversation?')
                         || url.hash || url.username || url.password || url.port || access.signed_url.includes('\\')
                         || url.searchParams.getAll('agent_id').length !== 1 || url.searchParams.get('agent_id') !== agentId
                         || url.searchParams.getAll('conversation_signature').length !== 1
                         || !/^[^\s]{32,4096}$/.test(url.searchParams.get('conversation_signature') || '')
+                        || url.searchParams.getAll('conversation_id').length !== 1
+                        || !/^conv_[A-Za-z0-9_-]{1,123}$/.test(url.searchParams.get('conversation_id') || '')
                         || [...url.searchParams.keys()].some(key => !['agent_id', 'conversation_signature', 'conversation_id'].includes(key)))
                         throw new Error('assistant_unavailable');
+                    conversationId = url.searchParams.get('conversation_id');
                 } catch { throw new Error('assistant_unavailable'); }
                 finally { clearTimeout(timeout); }
                 if (!request.isCurrent()) return {isOpen: () => false, endSession: async () => {}};
@@ -85,7 +87,12 @@
                 try {
                     session = await sdk.Conversation.startSession({
                         signedUrl: access.signed_url, textOnly: request.textOnly, connectionType: 'websocket',
-                        onConnect: () => {
+                        onConnect: detail => {
+                            if (detail?.conversationId && detail.conversationId !== conversationId) {
+                                failed = true; connected = false;
+                                if (accepted && !ended) { callbacks.onError?.(); endSession().catch(() => {}); }
+                                return;
+                            }
                             connected = true;
                             if (accepted && !ended && request.isCurrent())
                                 callbacks.onConnect?.({conversationId: session.getId()});
@@ -112,8 +119,10 @@
                             endSession().catch(() => {});
                         }
                     });
-                    if (failed) { await endSession(); throw new Error('assistant_connection_failed'); }
                     if (ended || !request.isCurrent()) { await session.endSession(); return handle; }
+                    if (failed || typeof session?.getId !== 'function' || session.getId() !== conversationId) {
+                        await endSession(); throw new Error('assistant_provider_binding_unavailable');
+                    }
                     accepted = true;
                     callbacks.onConversationCreated?.(handle);
                     if (connected) callbacks.onConnect?.({conversationId: session.getId()});

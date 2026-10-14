@@ -1,13 +1,22 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
+import {randomUUID} from 'node:crypto';
 
 const fixtures = [['src/lib/assistantDirect.js', 'web-personal', 'agent_5001m475t8mre208r993d3ernz84']];
 let checks = 0;
 const equal = (a, b) => { assert.equal(a, b); checks++; };
 async function exercise(path, source, agentId) {
   const timers = new Map(); let nextTimer = 0, loads = 0, starts = 0, ends = 0, sent, options;
-  const scope = vm.createContext({
+  const admissions = [];
+  const site = 'personal';
+  const scope = vm.createContext({Date, URL, AbortController, crypto: {randomUUID},
+    async fetch(url, request) {
+      admissions.push({url, request}); const body = JSON.parse(request.body), now = Date.now();
+      return {ok: true, text: async () => JSON.stringify({site, mode: body.mode,
+        signed_url: 'wss://api.elevenlabs.io/v1/convai/conversation?agent_id=' + agentId + '&conversation_signature=offline-signed-access-01234567890123456789&conversation_id=conv_offline',
+        issued_at: new Date(now).toISOString(), expires_at: new Date(now + 900000).toISOString(), pause_window_seconds: 900})};
+    },
     setTimeout(fn, ms) { timers.set(++nextTimer, {fn, ms}); return nextTimer; },
     clearTimeout(id) { timers.delete(id); },
   });
@@ -18,7 +27,7 @@ async function exercise(path, source, agentId) {
       sendUserMessage: value => { sent = value; }, getInputVolume: () => .42, getOutputVolume: () => .73,
       setMicMuted: value => { muted = value; }};
   }}};
-  const make = loadSdk => scope.GoddTechDirectAssistant.createDirectSession({agentId, source, loadSdk});
+  const make = loadSdk => scope.GoddTechDirectAssistant.createDirectSession({agentId, source, loadSdk, noticeDigests: {text: 'a'.repeat(64), voice: 'b'.repeat(64)}});
   const adapter = make(async () => { loads++; return sdk; });
   let current = true, received, disconnected, voiceMode, muted;
   const request = mode => ({consent: {source, mode}, textOnly: mode === 'text', isCurrent: () => current,
@@ -28,7 +37,8 @@ async function exercise(path, source, agentId) {
   await assert.rejects(adapter.startSession({...request('text'), consent: {source, mode: 'voice'}})); checks++;
   equal(starts, 0); equal(loads, 0);
   const handle = await adapter.startSession(request('text'));
-  equal(starts, 1); equal(options.agentId, agentId); equal(options.textOnly, true);
+  equal(starts, 1); equal(options.agentId, undefined); equal(new URL(options.signedUrl).searchParams.get('agent_id'), agentId);
+  equal(admissions.length, 1); equal(admissions[0].request.credentials, 'omit'); equal(JSON.parse(admissions[0].request.body).consent, true); equal(options.textOnly, true);
   equal(options.connectionType, 'websocket'); equal(handle.isOpen(), true);
   handle.sendUserMessage('ordinary inquiry'); equal(sent, 'ordinary inquiry');
   options.onMessage({role: 'agent', message: 'reply'}); equal(received.message, 'reply');
@@ -66,7 +76,7 @@ async function exercise(path, source, agentId) {
   const late = await pending; equal(late.isOpen(), false); equal(ends, 4);
   current = true;
   const brokenClose = make(async () => ({Conversation: {async startSession(value) {
-    value.onConnect(); return {getId: () => 'broken', endSession: async () => { throw Error('offline close failure'); }};
+    value.onConnect(); return {getId: () => 'conv_offline', endSession: async () => { throw Error('offline close failure'); }};
   }}}));
   await brokenClose.prepare('text'); const broken = await brokenClose.startSession(request('text'));
   await assert.rejects(broken.endSession()); checks++;
@@ -90,4 +100,24 @@ for (const outcome of ['timeout', 'invalid-global', 'network-error']) {
   // A late load cannot turn a failed load into a successful connection.
   script.onload(); await assert.rejects(adapter.startSession({consent: {source: 'web-personal', mode: 'text'}, textOnly: true, isCurrent: () => true})); checks++;
 }
+
+// Admission and provider binding regressions use only mocked transport/SDK.
+async function admissionRegression(path, source, agentId) {
+  const site = source === 'web-personal' ? 'personal' : source === 'web-samgov' ? 'government' : 'corporate';
+  for (const scenario of ['clock-ahead','clock-behind','missing-id','duplicate-id','sdk-id-mismatch','callback-id-mismatch']) {
+    let started=0, closed=0;
+    class VisitorClock extends Date { static now() {return Date.now()+(scenario==='clock-ahead'?108000000:scenario==='clock-behind'?-108000000:0);} }
+    const scope=vm.createContext({Date:VisitorClock,URL,AbortController,crypto:{randomUUID},setTimeout(){return 1;},clearTimeout(){},
+      async fetch() { const now=Date.now();const id=scenario==='missing-id'?'':scenario==='duplicate-id'?'&conversation_id=conv_offline&conversation_id=conv_other':'&conversation_id=conv_offline';
+        return {ok:true,text:async()=>JSON.stringify({site,mode:'text',signed_url:'wss://api.elevenlabs.io/v1/convai/conversation?agent_id='+agentId+'&conversation_signature=offline-signature-01234567890123456789'+id,issued_at:new Date(now).toISOString(),expires_at:new Date(now+900000).toISOString(),pause_window_seconds:900})}; }
+    });
+    vm.runInContext(fs.readFileSync(path,'utf8').replace('export function','function'),scope);
+    const sdk={Conversation:{async startSession(options){started++;options.onConnect({conversationId:scenario==='callback-id-mismatch'?'conv_wrong':'conv_offline'});return {getId:()=>scenario==='sdk-id-mismatch'?'conv_wrong':'conv_offline',endSession:async()=>{closed++;}};}}};
+    const adapter=scope.GoddTechDirectAssistant.createDirectSession({agentId,source,noticeDigests:{text:'a'.repeat(64)},loadSdk:async()=>sdk});await adapter.prepare('text');
+    const request={textOnly:true,consent:{source,mode:'text'},isCurrent:()=>true};
+    if(scenario.startsWith('clock')) { const handle=await adapter.startSession(request);equal(handle.isOpen(),true);await handle.endSession();equal(closed,1); }
+    else {await assert.rejects(adapter.startSession(request));checks++;equal(started,scenario.endsWith('mismatch')?1:0);equal(closed,scenario.endsWith('mismatch')?1:0);}
+  }
+}
+for(const fixture of fixtures)await admissionRegression(...fixture);
 console.log(JSON.stringify({result: 'PASS', assertions: checks, provider_sessions: 0, microphone_requests: 0}));

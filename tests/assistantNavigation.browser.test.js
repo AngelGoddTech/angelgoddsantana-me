@@ -107,7 +107,7 @@ async function localBrowser(enabled) {
     })()`);
     const settled = expectedPath => until(async () => {
       const value = await snapshot();
-      const expectedHeading = {'/assistant': 'AI assistant', '/privacy': 'AI assistant privacy',
+      const expectedHeading = {'/assistant': 'A conversationstarts here.', '/privacy': 'AI assistant privacy',
         '/terms': 'AI assistant terms', '/ai-retention-policy': 'Website AI assistant retention policy',
         '/ai-retention-policy/azure-copy-amendment': 'Azure-copy retention policy'}[expectedPath];
       return value.path === expectedPath && value.heading &&
@@ -200,12 +200,12 @@ test('legal entry, assistant exit, history and direct loads retain document-scop
   } finally { await browser.close(); }
 });
 
-test('bridge OFF keeps microphone blocked on direct load and legal-page entry', async () => {
+test('direct admission preserves exact assistant microphone document policy independently of retired bridge', async () => {
   const browser = await localBrowser(false);
   try {
-    policy(await browser.navigate('/assistant'), false);
+    policy(await browser.navigate('/assistant'), true);
     policy(await browser.navigate('/privacy'), false);
     await browser.evaluate(`Array.from(document.querySelectorAll('a')).find(link => link.textContent === 'Review the conversation notice').click()`);
-    policy(await browser.settled('/assistant'), false);
+    policy(await browser.settled('/assistant'), true);
   } finally { await browser.close(); }
 });
